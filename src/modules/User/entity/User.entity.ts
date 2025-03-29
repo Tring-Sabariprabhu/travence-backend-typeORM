@@ -5,6 +5,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedCol
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn('uuid') 
+  @Field()
   user_id!: string
 
   @Column("varchar", {length: 100})

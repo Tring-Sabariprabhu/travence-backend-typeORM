@@ -1,5 +1,5 @@
 import { ObjectType, Field } from "type-graphql";
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { GroupMember } from "../../GroupMembers/entity/GroupMembers.entity";
 
 export enum Invite_Status {
@@ -10,6 +10,7 @@ export enum Invite_Status {
 @ObjectType()
 export class GroupInvite {
     @PrimaryGeneratedColumn('uuid')
+    @Field()
     invite_id!: string;
 
     @Column("varchar", { length: 50 })
@@ -34,6 +35,6 @@ export class GroupInvite {
     invited_at!: string
 
     @ManyToOne(() => GroupMember, (member) => member.member_id)
-    @Field()
+    @JoinColumn({name: "invited_by"})
     invited_by!: string;
 }

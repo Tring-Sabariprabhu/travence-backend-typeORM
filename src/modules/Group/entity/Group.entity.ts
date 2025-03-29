@@ -1,12 +1,13 @@
-import {Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn, DeleteDateColumn, OneToMany, JoinColumn, ManyToOne} from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn, DeleteDateColumn, JoinColumn, ManyToOne, OneToMany} from "typeorm";
 import { Field, ObjectType } from "type-graphql";
-import { GroupMember } from "../../GroupMembers/entity/GroupMembers.entity";
 import { User } from "../../User/entity/User.entity";
+import { GroupMember } from "../../GroupMembers/entity/GroupMembers.entity";
 
 @Entity({name: "groups"})
 @ObjectType()
 export class Group{
     @PrimaryGeneratedColumn('uuid')
+    @Field()
     group_id!: string
 
     @Column("varchar", {length: 100})
@@ -18,7 +19,7 @@ export class Group{
     group_description!: string
 
     @ManyToOne(()=> User, (user)=> user.user_id)
-    @JoinColumn()
+    @JoinColumn({name: "created_by"})
     created_by!: string
 
     @CreateDateColumn()
