@@ -2,6 +2,7 @@ import { ObjectType, Field } from "type-graphql";
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, OneToOne, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, JoinColumn } from "typeorm"; 
 import { User } from "../../User/entity/User.entity";
 import { Group } from "../../Group/entity/Group.entity";
+import { GroupInvite } from "../../GroupInvite/entity/GroupInvites.entity";
 
 export enum GroupMember_Role{
     ADMIN = "admin",
@@ -24,17 +25,19 @@ export class GroupMember{
     @Field()
     user_role!: string
 
-    @ManyToOne(()=> User, (user)=> user.user_id)
+    @ManyToOne(()=> User, (user)=> user.joinedGroups, {eager: true})
     @JoinColumn({name: "user_id"})
-    user_id!: string
+    @Field(()=> User)
+    user?: User
 
-    @ManyToOne(()=> Group, (group)=> group.group_id)
+    @ManyToOne(()=> Group, (group)=> group.group_members, {eager: true})
     @JoinColumn({name: "group_id"})
-    group_id!: string
+    @Field(()=> Group)
+    group!: Group
 
     @CreateDateColumn()
     @Field()
-    joinet_at!: Date
+    joined_at!: Date
 
     @UpdateDateColumn()
     @Field({nullable: true})
@@ -44,4 +47,7 @@ export class GroupMember{
     @Field({nullable: true})
     deleted_at?: Date
 
+    @OneToMany(()=> GroupInvite, (invite)=> invite.invited_by)
+    @Field(()=> [GroupInvite])
+    invited_list?: GroupInvite[]
 }

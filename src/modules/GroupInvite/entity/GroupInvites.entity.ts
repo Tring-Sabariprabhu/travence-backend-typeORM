@@ -32,9 +32,9 @@ export class GroupInvite {
 
     @CreateDateColumn()
     @Field()
-    invited_at!: string
+    invited_at!: Date
 
-    @ManyToOne(() => GroupMember, (member) => member.member_id)
+    @ManyToOne(() => GroupMember, (member) => member.invited_list)
     @JoinColumn({name: "invited_by"})
-    invited_by!: string;
+    invited_by!: GroupMember;
 }

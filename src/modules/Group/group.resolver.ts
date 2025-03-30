@@ -1,10 +1,14 @@
-import { Arg, Query, Resolver } from "type-graphql";
+import { Arg, Field, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { GroupService } from "./group.service";
 import { Group } from "./entity/Group.entity";
-import { GroupListInput } from "./group.input";
+import { CreateGroupInput, GroupInput, GroupListInput, UpdateGroupInput } from "./group.input";
 import { GroupResponse } from "./group.respone";
+import { GroupMember } from "../GroupMembers/entity/GroupMembers.entity";
+import { User } from "../User/entity/User.entity";
+import { GroupMemberResponse } from "../GroupMembers/groupmember.response";
+import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
 
-@Resolver()
+@Resolver(Group)
 export class GroupResolver{
     private GroupService = new GroupService();
 
@@ -13,8 +17,19 @@ export class GroupResolver{
         return this.GroupService.groupList(input);
     }
     
-    // @Query(()=> GroupResponse)
-    // async group(@Arg("group_id") group_id: string): Promise<GroupResponse>{
-    //     return this.GroupService.groupList(group_id);
-    // }
+    @Query(()=> GroupResponse)
+    async group(@Arg("input") input: GroupInput): Promise<GroupResponse>{
+        return this.GroupService.group(input);
+    }
+
+    @Mutation(()=> String)
+    async createGroup(@Arg("input") input: CreateGroupInput): Promise<string> {
+        return this.GroupService.createGroup(input);
+    }
+
+    @Mutation(()=> String)
+    async updateGroup(@Arg("input") input: UpdateGroupInput): Promise<string> {
+        return this.GroupService.updateGroup(input);
+    }
+    
 }

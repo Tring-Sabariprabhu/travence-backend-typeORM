@@ -1,4 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
+import { GroupMember } from "../GroupMembers/entity/GroupMembers.entity";
+import { User } from "../User/entity/User.entity";
+import { ManyToOne, OneToMany } from "typeorm";
 import { GroupMemberResponse } from "../GroupMembers/groupmember.response";
 
 
@@ -14,14 +17,9 @@ export class GroupResponse {
     @Field()
     group_description!: string
 
-    @Field()
-    created_by!: string
-
-    @Field()
-    created_user_email!: string
-
-    @Field()
-    created_user_name!: string
+    @ManyToOne(()=> User, user => user.user_id)
+    @Field({nullable: true})
+    created_by?: User
 
     @Field()
     created_at!: Date
@@ -31,5 +29,9 @@ export class GroupResponse {
 
     @Field({nullable: true})
     deleted_at?: Date
+
+    @OneToMany(()=> GroupMember, group_member=> group_member.group)
+    @Field(()=> [GroupMember], {nullable: true})
+    group_members?: GroupMember[]
     
 }

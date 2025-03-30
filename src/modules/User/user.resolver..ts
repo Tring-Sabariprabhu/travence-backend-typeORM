@@ -5,7 +5,7 @@ import { LoginResponse } from "./user.response";
 import { User } from "./entity/User.entity";
 import dataSource from "../../database/data-source";
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
     private UserService = new UserService();
 
@@ -21,5 +21,4 @@ export class UserResolver {
     async signup(@Arg("input") input: SignupInput): Promise<string> {
         return this.UserService.signup(input);
     }
-    
 }

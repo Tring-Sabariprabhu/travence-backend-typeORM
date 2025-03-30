@@ -18,9 +18,10 @@ export class Group{
     @Field()
     group_description!: string
 
-    @ManyToOne(()=> User, (user)=> user.user_id)
-    @JoinColumn({name: "created_by"})
-    created_by!: string
+    @ManyToOne(() => User, (user) => user.createdGroups)
+    @JoinColumn({ name: "created_by" })
+    @Field(() => User)
+    created_by!: User;
 
     @CreateDateColumn()
     @Field()
@@ -34,4 +35,7 @@ export class Group{
     @Field({nullable: true})
     deleted_at?: Date
 
+    @OneToMany(() => GroupMember, (groupMember) => groupMember.group)
+    @Field(() => [GroupMember], { nullable: true })
+    group_members?: GroupMember[];
 }

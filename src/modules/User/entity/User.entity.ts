@@ -1,5 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { GroupMember } from "../../GroupMembers/entity/GroupMembers.entity";
+import { Group } from "../../Group/entity/Group.entity";
 
 @Entity({ name: "users" }) 
 @ObjectType()
@@ -19,7 +21,7 @@ export class User {
   @Column("varchar", {length: 50})
   @Field()
   password!: string
-  
+
   @CreateDateColumn()
   @Field()
   created_at!: Date
@@ -31,5 +33,11 @@ export class User {
   @DeleteDateColumn()
   @Field({nullable: true})
   deleted_at?: Date
+
+  @OneToMany(() => Group, (group) => group.created_by)
+  createdGroups?: Group[];
+
+  @OneToMany(() => GroupMember, (group_member) => group_member.group)
+  joinedGroups?: GroupMember[];
 
 }

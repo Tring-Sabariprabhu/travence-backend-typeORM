@@ -6,29 +6,30 @@ import jwt from "jsonwebtoken";
 import { decryptPassword, encryptPassword } from "../../helper/Crypto/crypto";
 import dotenv from 'dotenv';
 import { LoginResponse } from "./user.response";
-import { Arg } from "type-graphql";
+import { GroupInvite } from "../GroupInvite/entity/GroupInvites.entity";
 dotenv.config();
 console.log()
 
 export class UserService {
     private UserRepository = dataSource.getRepository(User);
- 
+    private GroupInviteRepository = dataSource.getRepository(GroupInvite);
+
     async getCurrentUser(token: string): Promise<User> {
         try {
-            if(!process.env.JWT_SECRET_KEY){
+            if (!process.env.JWT_SECRET_KEY) {
                 throw new Error("Key not found");
             }
             const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY) as { user_id: string };
 
             const user = await this.UserRepository.findOneBy({ user_id: decoded.user_id });
-    
+
             if (!user) {
-              throw new Error("User not found");
+                throw new Error("User not found");
             }
-        
+
             return user;
         }
-        catch(err){
+        catch (err) {
             throw new Error("Get User details failed " + err);
         }
     }
@@ -63,20 +64,37 @@ export class UserService {
     async signup(input: SignupInput): Promise<string> {
         const { name, email, password } = input;
         try {
-            const UserExists = await this.UserRepository.findOneBy({
-                email: email
+            const UserExists = await this.UserRepository.findOne({
+                where: { email: email },
+                withDeleted: true
             });
-            if (UserExists) {
-                throw new Error("User Already Exists");
-            }
             const encryptedPassword = encryptPassword(password);
-            console.log(encryptedPassword)
-            await this.UserRepository.save({
-                user_id: uuidv4(),
-                name: name,
-                email: email,
-                password: encryptedPassword
+            if (UserExists) {
+                if(UserExists?.deleted_at === null){
+                    throw new Error("User already Exists");
+                }else{
+                    if(encryptedPassword)
+                        UserExists.password = encryptedPassword;
+                    UserExists.name = name;
+                    await this.UserRepository.save(UserExists);
+                }
+            }else{
+                await this.UserRepository.save({
+                    user_id: uuidv4(),
+                    name: name,
+                    email: email,
+                    password: encryptedPassword
+                });
+            }  
+            const invitesCount = await this.GroupInviteRepository.count({
+                where: {email: email}
             });
+            if(invitesCount){
+                await this.GroupInviteRepository.update(
+                    {email: email},
+                    {registered_user: true}
+                );
+            }
             return "User Registered";
         }
         catch (err) {
