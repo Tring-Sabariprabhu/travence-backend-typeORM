@@ -1,6 +1,6 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { UserService } from "./user.service";
-import { SigninInput, SignupInput } from "./user.input";
+import { SigninInput, SignupInput, UpdateUserInput } from "./user.input";
 import { LoginResponse } from "./user.response";
 import { User } from "./entity/User.entity";
 import dataSource from "../../database/data-source";
@@ -20,5 +20,9 @@ export class UserResolver {
     @Mutation(() => String)
     async signup(@Arg("input") input: SignupInput): Promise<string> {
         return this.UserService.signup(input);
+    }
+    @Mutation(()=> String)
+    async updateUser(@Arg("input") input: UpdateUserInput): Promise<string> {
+        return this.UserService.updateUser(input);
     }
 }

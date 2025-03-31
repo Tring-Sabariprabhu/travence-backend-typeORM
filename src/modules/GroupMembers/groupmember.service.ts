@@ -31,14 +31,16 @@ export class GroupMemberService{
             const memberExist = await this.GroupMemberRepository.findOne(
                 {
                     where: {group: {group_id: group_id}, user: {user_id: user_id}},
-                    withDeleted: true}
+                    withDeleted: true
+                    }
             )
             if(memberExist){
                 if(memberExist?.deleted_at === null){
                     throw new Error("Member already Exist");
                 }else{
-                    memberExist.user_role = GroupMember_Role.MEMBER;
-                    await this.GroupMemberRepository.save(memberExist);
+                    await this.GroupMemberRepository.restore(memberExist?.member_id);
+                    // memberExist.user_role = GroupMember_Role.MEMBER;
+                    // await this.GroupMemberRepository.save(memberExist);
                 }
             }else{
                 await this.GroupMemberRepository.save({
@@ -59,7 +61,9 @@ export class GroupMemberService{
         try{
             const {admin_id, member_id} = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
-                where: {member_id: admin_id}
+                where: {
+                    member_id: admin_id,
+                    user_role: GroupMember_Role.ADMIN}
             })
             if(!adminInGroup){
                 throw new Error("Access denied !");
@@ -83,7 +87,9 @@ export class GroupMemberService{
         try{
             const {admin_id, member_id} = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
-                where: {member_id: admin_id}
+                where: {
+                    member_id: admin_id,
+                    user_role: GroupMember_Role.ADMIN}
             })
             if(!adminInGroup){
                 throw new Error("Access denied !");

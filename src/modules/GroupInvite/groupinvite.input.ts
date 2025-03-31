@@ -7,7 +7,22 @@ export class CreateGroupInviteInput{
 
     @Field(()=> [String])
     emails!: string[]
+
 }
+
+@InputType()
+export class ResendGroupInvitesInput {
+    @Field()
+    invited_by!: string
+
+    @Field(()=> [String])
+    invites!: string[]
+}
+
+@InputType()
+export class DeleteGroupInvitesInput extends ResendGroupInvitesInput{
+}
+
 
 @InputType()
 export class GetInvitedListInput{
@@ -22,10 +37,13 @@ export class GetGroupInvitesInput{
 }
 
 @InputType()
-export class GroupInviteActionsInput{
-    @Field()
-    admin_id!: string
+export class AcceptGroupInviteInput {
 
     @Field()
     invite_id!: string
+}
+
+@InputType()
+export class RejectGroupInviteInput extends AcceptGroupInviteInput{
+
 }

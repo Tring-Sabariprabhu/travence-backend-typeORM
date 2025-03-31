@@ -63,7 +63,8 @@ export class GroupService {
                     updated_at: true,
                     created_by: {
                         name: true,
-                        email: true
+                        email: true,
+                        user_id: true
                     },
                     group_members: {
                         member_id: true,
@@ -73,7 +74,7 @@ export class GroupService {
                         updated_at: true,
                         user: {
                             name: true,
-                            email: true
+                            email: true,
                         }
                     }
                 }
@@ -124,7 +125,9 @@ export class GroupService {
         try{
             const {admin_id, group_name, group_description} = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
-                where: {member_id: admin_id}
+                where: {
+                    member_id: admin_id,
+                    user_role: GroupMember_Role.ADMIN}
             });
             if(!adminInGroup){
                 throw new Error("Access denied !");
