@@ -8,10 +8,11 @@ import { v4 as uuidv4 } from "uuid";
 
 export class GroupMemberService{
 
-    private GroupMemberRepository = dataSource.getRepository(GroupMember);
-    private GroupRepository = dataSource.getRepository(Group);
-    private UserRepository = dataSource.getRepository(User);
-
+    constructor(
+        private GroupMemberRepository = dataSource.getRepository(GroupMember),
+        private GroupRepository = dataSource.getRepository(Group),
+        private UserRepository = dataSource.getRepository(User),
+    ){}
     async createMember(input: CreateGroupMemberInput): Promise<string> {
         try{
             const {group_id, user_id, user_role} = input;

@@ -16,11 +16,12 @@ import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
 import { GroupInviteResolver } from "./groupinvite.resolver";
 
 export class GroupInviteService {
-    private GroupInviteRepository = dataSource.getRepository(GroupInvite);
-    private GroupMemberRepository = dataSource.getRepository(GroupMember);
-    private UserRepository = dataSource.getRepository(User);
-
-    private getGroupMemberResolver = new GroupMemberResolver();
+   constructor(
+    private GroupInviteRepository = dataSource.getRepository(GroupInvite),
+    private GroupMemberRepository = dataSource.getRepository(GroupMember),
+    private UserRepository = dataSource.getRepository(User),
+    private getGroupMemberResolver:GroupMemberResolver,
+   ){}
 
     async createGroupInvites(input: CreateGroupInviteInput): Promise<string> {
         try {

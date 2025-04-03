@@ -7,8 +7,10 @@ import dataSource from "../../database/data-source";
 
 @Resolver(User)
 export class UserResolver {
-    private UserService = new UserService();
-
+    constructor(
+        private UserService:UserService,
+    ){}
+    
     @Query(()=> User)
     async getCurrentUser(@Arg("token") token: string): Promise<User>{
         return this.UserService.getCurrentUser(token);

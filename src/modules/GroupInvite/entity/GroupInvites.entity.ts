@@ -24,7 +24,7 @@ export class GroupInvite {
             default: Invite_Status.INVITED
         })
     @Field()
-    invite_status!: string
+    invite_status!: Invite_Status
 
     @Column("boolean")
     @Field()

@@ -1,16 +1,15 @@
-import { Arg, Field, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { GroupService } from "./group.service";
 import { Group } from "./entity/Group.entity";
-import { CreateGroupInput, GroupInput, GroupListInput, UpdateGroupInput } from "./group.input";
+import { CreateGroupInput, DeleteGroupInput, GroupInput, GroupListInput, UpdateGroupInput } from "./group.input";
 import { GroupResponse } from "./group.respone";
-import { GroupMember } from "../GroupMembers/entity/GroupMembers.entity";
-import { User } from "../User/entity/User.entity";
-import { GroupMemberResponse } from "../GroupMembers/groupmember.response";
-import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
 
 @Resolver(Group)
 export class GroupResolver{
-    private GroupService = new GroupService();
+
+    constructor(
+        private GroupService:GroupService
+    ){}
 
     @Query(()=> [GroupResponse])
     async groupList(@Arg("input") input: GroupListInput): Promise<GroupResponse[]> {
@@ -30,6 +29,10 @@ export class GroupResolver{
     @Mutation(()=> String)
     async updateGroup(@Arg("input") input: UpdateGroupInput): Promise<string> {
         return this.GroupService.updateGroup(input);
+    }
+    @Mutation(()=> String)
+    async deleteGroup(@Arg("input") input: DeleteGroupInput): Promise<string> {
+        return this.GroupService.deleteGroup(input);
     }
     
 }

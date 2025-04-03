@@ -41,3 +41,9 @@ export class UpdateGroupInput{
     @Field()
     group_description!: string
 }
+
+@InputType()
+export class DeleteGroupInput{
+    @Field()
+    admin_id!: string
+}

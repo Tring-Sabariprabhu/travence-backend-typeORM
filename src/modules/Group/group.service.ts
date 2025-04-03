@@ -1,20 +1,20 @@
 import dataSource from "../../database/data-source";
 import { Group } from "./entity/Group.entity";
-import { CreateGroupInput, GroupInput, GroupListInput, UpdateGroupInput } from "./group.input";
+import { CreateGroupInput, DeleteGroupInput, GroupInput, GroupListInput, UpdateGroupInput } from "./group.input";
 import { GroupResponse } from "./group.respone";
 import { GroupMember, GroupMember_Role } from "../GroupMembers/entity/GroupMembers.entity";
-import { GroupMemberResponse } from "../GroupMembers/groupmember.response";
 import { User } from "../User/entity/User.entity";
 import { v4 as uuidv4 } from "uuid";
-import { GroupResolver } from "./group.resolver";
 import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
 
 export class GroupService {
-    private getGroupMemberResolver = new GroupMemberResolver();
-
-    private GroupRepository = dataSource.getRepository(Group);
-    private GroupMemberRepository = dataSource.getRepository(GroupMember);
-    private UserRepository = dataSource.getRepository(User);
+    constructor(
+        private getGroupMemberResolver:GroupMemberResolver,
+        private GroupRepository = dataSource.getRepository(Group),
+        private GroupMemberRepository = dataSource.getRepository(GroupMember),
+        private UserRepository = dataSource.getRepository(User),
+    ){}
+    
 
     async groupList(input: GroupListInput): Promise<GroupResponse[]> {
         try {
@@ -149,5 +149,29 @@ export class GroupService {
             throw new Error("Updating Group details failed "+ err);
         }
     }
-
+    async deleteGroup(input: DeleteGroupInput): Promise<string>{
+        try{
+            const {admin_id} = input;
+            const adminInGroup = await this.GroupMemberRepository.findOne({
+                where: {member_id: admin_id}
+            });
+            if(!adminInGroup){
+                throw new Error("Access denied !");
+            }
+            const group = await this.GroupRepository.findOne({
+                where: {created_by: {user_id: adminInGroup?.user?.user_id}}
+            });
+            if(!group){
+                throw new Error("Access denied !");
+            }
+            await this.GroupRepository.softDelete({
+                group_id: group?.group_id
+            })
+            return "Group deleted Successfully";
+        }
+        catch(err){
+            console.log(err);
+            throw new Error("Deleting Group details failed "+err);
+        }
+    }
 }

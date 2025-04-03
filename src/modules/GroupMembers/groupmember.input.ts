@@ -12,7 +12,7 @@ export class CreateGroupMemberInput{
     user_id!: string
 
     @Field()
-    user_role!: string
+    user_role!: GroupMember_Role
 }
 
 @InputType()

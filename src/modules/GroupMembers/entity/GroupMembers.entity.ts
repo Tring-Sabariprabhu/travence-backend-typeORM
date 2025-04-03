@@ -3,6 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, OneToOne,
 import { User } from "../../User/entity/User.entity";
 import { Group } from "../../Group/entity/Group.entity";
 import { GroupInvite } from "../../GroupInvite/entity/GroupInvites.entity";
+import { Trip } from "../../Trip/entity/trip.entity";
 
 export enum GroupMember_Role{
     ADMIN = "admin",
@@ -23,7 +24,7 @@ export class GroupMember{
             default: GroupMember_Role.MEMBER
             })
     @Field()
-    user_role!: string
+    user_role!: GroupMember_Role
 
     @ManyToOne(()=> User, (user)=> user.joinedGroups, {eager: true})
     @JoinColumn({name: "user_id"})
@@ -50,4 +51,8 @@ export class GroupMember{
     @OneToMany(()=> GroupInvite, (invite)=> invite.invited_by)
     @Field(()=> [GroupInvite])
     invited_list?: GroupInvite[]
+
+    @OneToMany(()=> Trip, trip=> trip.created_by)
+    @Field(()=> [Trip])
+    created_trips?: Trip[]
 }

@@ -6,7 +6,9 @@ import { ChangeRoleInput, CreateGroupMemberInput, DeleteGroupMemberInput } from 
 @Resolver(GroupMember)
 export class GroupMemberResolver{
 
-    private GroupMemberService = new GroupMemberService();
+    constructor(
+        private GroupMemberService:GroupMemberService
+    ){}
 
     @Query(()=> String)
     async getMessage(): Promise<string> {

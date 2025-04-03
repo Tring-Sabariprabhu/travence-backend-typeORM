@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon ./src/server.ts",
     "build": "tsc",
-    "start": "npm run build && ts-node ./dist/server.ts",
+    "start": "npm run build && ts-node ./src/server.ts",
     "start:local": "cross-env NODE_ENV=dev npm run db:migrate && cross-env NODE_ENV=dev ts-node ./src/server.ts --watch",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --d ./src/database/data-source.ts",
     "typeorm-test": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --d ./src/test-database/testdbconfig.ts",

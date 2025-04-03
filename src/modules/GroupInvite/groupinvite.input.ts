@@ -1,5 +1,17 @@
 import { Field, InputType } from "type-graphql";
 
+
+@InputType()
+export class GetInvitedListInput{
+    @Field()
+    admin_id!: string
+}
+
+@InputType()
+export class GetGroupInvitesInput{
+    @Field()
+    email!: string
+}
 @InputType()
 export class CreateGroupInviteInput{
     @Field()
@@ -23,18 +35,6 @@ export class ResendGroupInvitesInput {
 export class DeleteGroupInvitesInput extends ResendGroupInvitesInput{
 }
 
-
-@InputType()
-export class GetInvitedListInput{
-    @Field()
-    admin_id!: string
-}
-
-@InputType()
-export class GetGroupInvitesInput{
-    @Field()
-    email!: string
-}
 
 @InputType()
 export class AcceptGroupInviteInput {

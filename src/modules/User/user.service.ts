@@ -11,8 +11,10 @@ dotenv.config();
 console.log()
 
 export class UserService {
-    private UserRepository = dataSource.getRepository(User);
-    private GroupInviteRepository = dataSource.getRepository(GroupInvite);
+    constructor(
+        private UserRepository = dataSource.getRepository(User),
+        private GroupInviteRepository = dataSource.getRepository(GroupInvite),
+    ){}
 
     async getCurrentUser(token: string): Promise<User> {
         try {

@@ -12,7 +12,7 @@ export class GroupInviteResponse{
     email!: string
 
     @Field()
-    invite_status!: string
+    invite_status!: Invite_Status
     
     @Field()
     registered_user!: boolean

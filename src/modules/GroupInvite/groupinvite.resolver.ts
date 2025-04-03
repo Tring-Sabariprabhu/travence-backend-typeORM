@@ -7,7 +7,9 @@ import { GroupInviteResponse } from "./groupinvite.response";
 @Resolver(GroupInvite)
 export class GroupInviteResolver{
 
-    private GroupInviteService = new GroupInviteService();
+    constructor(
+        private GroupInviteService:GroupInviteService,
+    ){}
 
     @Query(()=> [GroupInviteResponse])
     async getGroupInvitedList(@Arg("input") input: GetInvitedListInput): Promise<GroupInviteResponse[]> {
