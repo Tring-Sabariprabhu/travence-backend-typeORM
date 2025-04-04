@@ -1,12 +1,14 @@
-import {Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn, DeleteDateColumn, OneToMany, JoinColumn, ManyToOne} from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn, DeleteDateColumn, JoinColumn, ManyToOne, OneToMany} from "typeorm";
 import { Field, ObjectType } from "type-graphql";
-import { GroupMember } from "../../GroupMembers/entity/GroupMembers.entity";
 import { User } from "../../User/entity/User.entity";
+import { GroupMember } from "../../GroupMembers/entity/GroupMembers.entity";
+import { Trip } from "../../Trip/entity/trip.entity";
 
 @Entity({name: "groups"})
 @ObjectType()
 export class Group{
     @PrimaryGeneratedColumn('uuid')
+    @Field()
     group_id!: string
 
     @Column("varchar", {length: 100})
@@ -17,9 +19,10 @@ export class Group{
     @Field()
     group_description!: string
 
-    @ManyToOne(()=> User, (user)=> user.user_id)
-    @JoinColumn()
-    created_by!: string
+    @ManyToOne(() => User, (user) => user.created_groups)
+    @JoinColumn({ name: "created_by" })
+    @Field(() => User)
+    created_by!: User;
 
     @CreateDateColumn()
     @Field()
@@ -33,4 +36,11 @@ export class Group{
     @Field({nullable: true})
     deleted_at?: Date
 
+    @OneToMany(() => GroupMember, (groupMember) => groupMember.group)
+    @Field(() => [GroupMember], { nullable: true })
+    group_members?: GroupMember[];
+
+    @OneToMany(()=> Trip, (trip)=> trip.group)
+    @Field(()=> [Trip])
+    trips?: Trip[]
 }
