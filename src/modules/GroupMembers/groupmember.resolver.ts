@@ -6,14 +6,11 @@ import { ChangeRoleInput, CreateGroupMemberInput, DeleteGroupMemberInput } from 
 @Resolver(GroupMember)
 export class GroupMemberResolver{
 
-    constructor(
-        private GroupMemberService:GroupMemberService
-    ){}
-
-    @Query(()=> String)
-    async getMessage(): Promise<string> {
-        return "Hi";
+    private GroupMemberService:GroupMemberService;
+    constructor(){
+        this.GroupMemberService = new GroupMemberService();
     }
+
     @Mutation(()=> String)
     async createGroupMember(@Arg("input") input: CreateGroupMemberInput): Promise<string> {
         return this.GroupMemberService.createMember(input);

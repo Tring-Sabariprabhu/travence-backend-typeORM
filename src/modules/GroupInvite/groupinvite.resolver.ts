@@ -1,15 +1,16 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { GroupInvite } from "./entity/GroupInvites.entity";
-import {  AcceptGroupInviteInput, CreateGroupInviteInput, DeleteGroupInvitesInput, GetGroupInvitesInput, GetInvitedListInput, RejectGroupInviteInput, ResendGroupInvitesInput } from "./groupinvite.input";
+import {  CreateGroupInviteInput, GetGroupInvitesInput, GetInvitedListInput, GroupInviteActionsInput, ResendAndDeleteGroupInvitesInput } from "./groupinvite.input";
 import { GroupInviteService } from "./groupinvite.service";
 import { GroupInviteResponse } from "./groupinvite.response";
 
 @Resolver(GroupInvite)
 export class GroupInviteResolver{
 
-    constructor(
-        private GroupInviteService:GroupInviteService,
-    ){}
+    private GroupInviteService:GroupInviteService;
+    constructor(){
+        this.GroupInviteService = new GroupInviteService();
+    }
 
     @Query(()=> [GroupInviteResponse])
     async getGroupInvitedList(@Arg("input") input: GetInvitedListInput): Promise<GroupInviteResponse[]> {
@@ -26,19 +27,19 @@ export class GroupInviteResolver{
         return this.GroupInviteService.createGroupInvites(input);
     }
     @Mutation(()=> String)
-    async resendGroupInvites(@Arg("input") input: ResendGroupInvitesInput): Promise<string> {
+    async resendGroupInvites(@Arg("input") input: ResendAndDeleteGroupInvitesInput): Promise<string> {
         return this.GroupInviteService.resendGroupInvites(input);
     }
     @Mutation(()=> String)
-    async deleteGroupInvites(@Arg("input") input: DeleteGroupInvitesInput): Promise<string> {
+    async deleteGroupInvites(@Arg("input") input: ResendAndDeleteGroupInvitesInput): Promise<string> {
         return this.GroupInviteService.deleteGroupInvites(input);
     }
     @Mutation(()=> String)
-    async acceptGroupInvite(@Arg("input") input: AcceptGroupInviteInput): Promise<string> {
+    async acceptGroupInvite(@Arg("input") input: GroupInviteActionsInput): Promise<string> {
         return this.GroupInviteService.acceptGroupInvite(input);
     }
     @Mutation(()=> String)
-    async rejectGroupInvite(@Arg("input") input: RejectGroupInviteInput): Promise<string> {
+    async rejectGroupInvite(@Arg("input") input: GroupInviteActionsInput): Promise<string> {
         return this.GroupInviteService.rejectGroupInvite(input);
     }
 }

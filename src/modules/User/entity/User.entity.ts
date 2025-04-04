@@ -35,9 +35,9 @@ export class User {
   deleted_at?: Date
 
   @OneToMany(() => Group, (group) => group.created_by)
-  createdGroups?: Group[];
+  created_groups?: Group[];
 
   @OneToMany(() => GroupMember, (group_member) => group_member.group)
-  joinedGroups?: GroupMember[];
+  joined_groups?: GroupMember[];
 
 }

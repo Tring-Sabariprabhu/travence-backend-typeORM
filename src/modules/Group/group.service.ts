@@ -6,14 +6,21 @@ import { GroupMember, GroupMember_Role } from "../GroupMembers/entity/GroupMembe
 import { User } from "../User/entity/User.entity";
 import { v4 as uuidv4 } from "uuid";
 import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
+import { Repository } from "typeorm";
 
 export class GroupService {
-    constructor(
-        private getGroupMemberResolver:GroupMemberResolver,
-        private GroupRepository = dataSource.getRepository(Group),
-        private GroupMemberRepository = dataSource.getRepository(GroupMember),
-        private UserRepository = dataSource.getRepository(User),
-    ){}
+    
+        private getGroupMemberResolver:GroupMemberResolver;
+        private GroupRepository:Repository<Group>;
+        private GroupMemberRepository:Repository<GroupMember>;
+        private UserRepository:Repository<User>;
+    
+   constructor(){
+        this.getGroupMemberResolver = new GroupMemberResolver();
+        this.GroupRepository = dataSource.getRepository(Group);
+        this.GroupMemberRepository = dataSource.getRepository(GroupMember);
+        this.UserRepository = dataSource.getRepository(User);
+   }
     
 
     async groupList(input: GroupListInput): Promise<GroupResponse[]> {

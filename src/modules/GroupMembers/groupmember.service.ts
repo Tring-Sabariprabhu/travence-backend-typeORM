@@ -1,3 +1,4 @@
+import { Repository } from "typeorm";
 import dataSource from "../../database/data-source";
 import { Group } from "../Group/entity/Group.entity";
 import { User } from "../User/entity/User.entity";
@@ -8,11 +9,16 @@ import { v4 as uuidv4 } from "uuid";
 
 export class GroupMemberService{
 
-    constructor(
-        private GroupMemberRepository = dataSource.getRepository(GroupMember),
-        private GroupRepository = dataSource.getRepository(Group),
-        private UserRepository = dataSource.getRepository(User),
-    ){}
+        private GroupMemberRepository:Repository<GroupMember>;
+        private GroupRepository:Repository<Group>;
+        private UserRepository:Repository<User>;
+
+    constructor(){
+        this.GroupMemberRepository = dataSource.getRepository(GroupMember);
+        this.GroupRepository = dataSource.getRepository(Group);
+        this.UserRepository = dataSource.getRepository(User);
+    }
+    
     async createMember(input: CreateGroupMemberInput): Promise<string> {
         try{
             const {group_id, user_id, user_role} = input;

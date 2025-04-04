@@ -23,7 +23,7 @@ export class CreateGroupInviteInput{
 }
 
 @InputType()
-export class ResendGroupInvitesInput {
+export class ResendAndDeleteGroupInvitesInput {
     @Field()
     invited_by!: string
 
@@ -31,19 +31,10 @@ export class ResendGroupInvitesInput {
     invites!: string[]
 }
 
-@InputType()
-export class DeleteGroupInvitesInput extends ResendGroupInvitesInput{
-}
-
 
 @InputType()
-export class AcceptGroupInviteInput {
+export class GroupInviteActionsInput {
 
     @Field()
     invite_id!: string
-}
-
-@InputType()
-export class RejectGroupInviteInput extends AcceptGroupInviteInput{
-
 }

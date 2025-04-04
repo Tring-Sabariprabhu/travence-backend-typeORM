@@ -4,6 +4,7 @@ import { User } from "../../User/entity/User.entity";
 import { Group } from "../../Group/entity/Group.entity";
 import { GroupInvite } from "../../GroupInvite/entity/GroupInvites.entity";
 import { Trip } from "../../Trip/entity/trip.entity";
+import { TripMember } from "../../TripMember/entity/TripMember.entity";
 
 export enum GroupMember_Role{
     ADMIN = "admin",
@@ -26,7 +27,7 @@ export class GroupMember{
     @Field()
     user_role!: GroupMember_Role
 
-    @ManyToOne(()=> User, (user)=> user.joinedGroups, {eager: true})
+    @ManyToOne(()=> User, (user)=> user.joined_groups, {eager: true})
     @JoinColumn({name: "user_id"})
     @Field(()=> User)
     user?: User
@@ -55,4 +56,8 @@ export class GroupMember{
     @OneToMany(()=> Trip, trip=> trip.created_by)
     @Field(()=> [Trip])
     created_trips?: Trip[]
+    
+    @OneToMany(()=> TripMember, trip_member=> trip_member.group_member)
+    @Field(()=> [TripMember])
+    joined_trips?: TripMember[]
 }

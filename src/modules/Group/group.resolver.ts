@@ -7,9 +7,10 @@ import { GroupResponse } from "./group.respone";
 @Resolver(Group)
 export class GroupResolver{
 
-    constructor(
-        private GroupService:GroupService
-    ){}
+    private GroupService:GroupService;
+    constructor(){
+        this.GroupService = new GroupService();
+    }
 
     @Query(()=> [GroupResponse])
     async groupList(@Arg("input") input: GroupListInput): Promise<GroupResponse[]> {

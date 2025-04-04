@@ -2,6 +2,7 @@ import {Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColu
 import { Field, ObjectType } from "type-graphql";
 import { User } from "../../User/entity/User.entity";
 import { GroupMember } from "../../GroupMembers/entity/GroupMembers.entity";
+import { Trip } from "../../Trip/entity/trip.entity";
 
 @Entity({name: "groups"})
 @ObjectType()
@@ -18,7 +19,7 @@ export class Group{
     @Field()
     group_description!: string
 
-    @ManyToOne(() => User, (user) => user.createdGroups)
+    @ManyToOne(() => User, (user) => user.created_groups)
     @JoinColumn({ name: "created_by" })
     @Field(() => User)
     created_by!: User;
@@ -38,4 +39,8 @@ export class Group{
     @OneToMany(() => GroupMember, (groupMember) => groupMember.group)
     @Field(() => [GroupMember], { nullable: true })
     group_members?: GroupMember[];
+
+    @OneToMany(()=> Trip, (trip)=> trip.group)
+    @Field(()=> [Trip])
+    trips?: Trip[]
 }

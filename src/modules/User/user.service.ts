@@ -7,14 +7,19 @@ import { decryptPassword, encryptPassword } from "../../helper/Crypto/crypto";
 import dotenv from 'dotenv';
 import { LoginResponse } from "./user.response";
 import { GroupInvite } from "../GroupInvite/entity/GroupInvites.entity";
+import { Repository } from "typeorm";
 dotenv.config();
 console.log()
 
 export class UserService {
-    constructor(
-        private UserRepository = dataSource.getRepository(User),
-        private GroupInviteRepository = dataSource.getRepository(GroupInvite),
-    ){}
+   
+        private UserRepository:Repository<User>;
+        private GroupInviteRepository:Repository<GroupInvite>;
+        constructor(){
+            this.UserRepository = dataSource.getRepository(User);
+            this.GroupInviteRepository = dataSource.getRepository(GroupInvite);
+        }
+   
 
     async getCurrentUser(token: string): Promise<User> {
         try {

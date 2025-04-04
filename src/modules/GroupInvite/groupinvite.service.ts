@@ -6,22 +6,24 @@ import {
     GetInvitedListInput, 
     GetGroupInvitesInput, 
     CreateGroupInviteInput, 
-    DeleteGroupInvitesInput, 
-    ResendGroupInvitesInput,
-    AcceptGroupInviteInput, 
-    RejectGroupInviteInput, } from "./groupinvite.input"; 
+    GroupInviteActionsInput,
+    ResendAndDeleteGroupInvitesInput} from "./groupinvite.input"; 
 import { v4 as uuidv4 } from "uuid";
 import { GroupInviteResponse } from "./groupinvite.response";
 import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
-import { GroupInviteResolver } from "./groupinvite.resolver";
+import { Repository } from "typeorm";
 
 export class GroupInviteService {
-   constructor(
-    private GroupInviteRepository = dataSource.getRepository(GroupInvite),
-    private GroupMemberRepository = dataSource.getRepository(GroupMember),
-    private UserRepository = dataSource.getRepository(User),
-    private getGroupMemberResolver:GroupMemberResolver,
-   ){}
+    private GroupInviteRepository:Repository<GroupInvite>;
+    private GroupMemberRepository:Repository<GroupMember>;
+    private UserRepository:Repository<User>;
+    private getGroupMemberResolver:GroupMemberResolver;
+   constructor(){
+        this.GroupInviteRepository = dataSource.getRepository(GroupInvite);
+        this.GroupMemberRepository = dataSource.getRepository(GroupMember);
+        this.UserRepository = dataSource.getRepository(User);
+        this.getGroupMemberResolver = new GroupMemberResolver();
+   }
 
     async createGroupInvites(input: CreateGroupInviteInput): Promise<string> {
         try {
@@ -54,7 +56,7 @@ export class GroupInviteService {
             throw new Error("Inviting User failed " + err);
         }
     }
-    async resendGroupInvites(input: ResendGroupInvitesInput): Promise<string> {
+    async resendGroupInvites(input: ResendAndDeleteGroupInvitesInput): Promise<string> {
         try{
             const {invited_by, invites} = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
@@ -94,7 +96,7 @@ export class GroupInviteService {
             throw new Error("Resending Invites failled "+ err);
         }
     }
-    async deleteGroupInvites(input: DeleteGroupInvitesInput): Promise<string> {
+    async deleteGroupInvites(input: ResendAndDeleteGroupInvitesInput): Promise<string> {
         try{
             const {invited_by, invites} = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
@@ -198,7 +200,7 @@ export class GroupInviteService {
             throw new Error("fetching Group Invites failed " + err);
         }
     }
-    async acceptGroupInvite(input: AcceptGroupInviteInput): Promise<string> {
+    async acceptGroupInvite(input: GroupInviteActionsInput): Promise<string> {
         try{
             const {invite_id} = input;
             const inviteDetails = await this.GroupInviteRepository.findOne({
@@ -239,7 +241,7 @@ export class GroupInviteService {
             throw new Error("Accept Group Invite failed "+ err);
         }
     }
-    async rejectGroupInvite(input: RejectGroupInviteInput): Promise<string> {
+    async rejectGroupInvite(input: GroupInviteActionsInput): Promise<string> {
         try{
             const {invite_id} = input;
             const inviteDetails = await this.GroupInviteRepository.findOne({

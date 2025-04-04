@@ -3,28 +3,31 @@ import { UserService } from "./user.service";
 import { SigninInput, SignupInput, UpdateUserInput } from "./user.input";
 import { LoginResponse } from "./user.response";
 import { User } from "./entity/User.entity";
-import dataSource from "../../database/data-source";
 
 @Resolver(User)
 export class UserResolver {
-    constructor(
-        private UserService:UserService,
-    ){}
+    
+    private userService:UserService;
+
+    constructor(){
+        this.userService = new UserService();
+    }
+    
     
     @Query(()=> User)
     async getCurrentUser(@Arg("token") token: string): Promise<User>{
-        return this.UserService.getCurrentUser(token);
+        return this.userService.getCurrentUser(token);
     }
     @Mutation(() => LoginResponse)
     async signin(@Arg("input") input: SigninInput): Promise<LoginResponse> {
-        return this.UserService.signin(input);
+        return this.userService.signin(input);
     }
     @Mutation(() => String)
     async signup(@Arg("input") input: SignupInput): Promise<string> {
-        return this.UserService.signup(input);
+        return this.userService.signup(input);
     }
     @Mutation(()=> String)
     async updateUser(@Arg("input") input: UpdateUserInput): Promise<string> {
-        return this.UserService.updateUser(input);
+        return this.userService.updateUser(input);
     }
 }
