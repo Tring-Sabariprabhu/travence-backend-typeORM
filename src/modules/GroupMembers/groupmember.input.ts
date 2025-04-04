@@ -16,7 +16,7 @@ export class CreateGroupMemberInput{
 }
 
 @InputType()
-export class ChangeRoleInput{
+export class GroupMemberActionsInput{
     @Field()
     admin_id!: string
 
@@ -24,11 +24,3 @@ export class ChangeRoleInput{
     member_id!: string
 }
 
-@InputType()
-export class DeleteGroupMemberInput{
-    @Field()
-    admin_id!: string
-
-    @Field()
-    member_id!: string
-}

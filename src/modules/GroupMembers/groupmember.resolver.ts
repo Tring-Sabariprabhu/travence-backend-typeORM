@@ -1,7 +1,7 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { GroupMember } from "./entity/GroupMembers.entity";
 import { GroupMemberService } from "./groupmember.service";
-import { ChangeRoleInput, CreateGroupMemberInput, DeleteGroupMemberInput } from "./groupmember.input";
+import {  CreateGroupMemberInput, GroupMemberActionsInput } from "./groupmember.input";
 
 @Resolver(GroupMember)
 export class GroupMemberResolver{
@@ -17,12 +17,12 @@ export class GroupMemberResolver{
     }
 
     @Mutation(()=> String)
-    async changeRole(@Arg("input") input: ChangeRoleInput): Promise<string> {
+    async changeRole(@Arg("input") input: GroupMemberActionsInput): Promise<string> {
         return this.GroupMemberService.changeRole(input);
     }
 
     @Mutation(()=> String)
-    async deleteGroupMember(@Arg("input") input: DeleteGroupMemberInput): Promise<string> {
+    async deleteGroupMember(@Arg("input") input: GroupMemberActionsInput): Promise<string> {
         return this.GroupMemberService.deleteGroupMember(input);
     }
 }
