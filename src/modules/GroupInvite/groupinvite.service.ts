@@ -50,12 +50,14 @@ export class GroupInviteService {
                     invite_status: Invite_Status.INVITED
                 })
                 await this.GroupInviteRepository.save(groupInvite);
+                const invited_by = adminInGroup?.user?.name;
+                const group_name = adminInGroup?.group?.group_name;
                 setMailAndSend(
                     {
                         destinationEmail: email,
                         subject: "Invite to Join Group in Travence",
                         message:
-                            `<html><p>You have been invited by ${adminInGroup?.user?.name} to join the group "${adminInGroup?.group?.group_name}" on Travence!</p><br>
+                            `<html><p>You have been invited by ${invited_by} to join the group "${group_name}" on Travence!</p><br>
                             <p>Click the link and Login with Travence</p><br>` +
                             (registered ?
                                 `<a href="https://2j2b6xw5-3000.inc1.devtunnels.ms/signin">Login Here</a></html>`
@@ -105,6 +107,24 @@ export class GroupInviteService {
                         invited_at: new Date(),
                     },
                 )
+                const email = userExist?.email;
+                const invited_by = adminInGroup?.user?.name;
+                const group_name = adminInGroup?.group?.group_name;
+                if(email)
+                setMailAndSend(
+                    {
+                        destinationEmail: email,
+                        subject: "Invite to Join Group in Travence",
+                        message:
+                            `<html><p>You have been invited by ${invited_by} to join the group "${group_name}" on Travence!</p><br>
+                            <p>Click the link and Login with Travence</p><br>` +
+                            (registered ?
+                                `<a href="https://2j2b6xw5-3000.inc1.devtunnels.ms/signin">Login Here</a></html>`
+                                :
+                                `<a href="https://2j2b6xw5-3000.inc1.devtunnels.ms/signup">Sign Up Here</a>`
+                            )
+                    });
+
             }
             return "Invites Resent Successfully";
         }

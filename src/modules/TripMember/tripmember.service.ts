@@ -50,7 +50,7 @@ export class TripMemberService {
                 if(email){
                     setMailAndSend({
                         destinationEmail: email,
-                        subject: "Trip plannednp in Travence",
+                        subject: "Trip planned in Travence",
                         message: 
                             `<html><h3> New Trip is planned! </h3><br>
                                 <p> You added to Trip ${trip?.trip_name}</p><br>
