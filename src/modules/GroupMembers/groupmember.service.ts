@@ -4,7 +4,7 @@ import { Group } from "../Group/entity/Group.entity";
 import { User } from "../User/entity/User.entity";
 import { GroupMember, GroupMember_Role } from "./entity/GroupMembers.entity";
 import {  CreateGroupMemberInput, GroupMemberActionsInput } from "./groupmember.input";
-import { v4 as uuidv4 } from "uuid";
+import { GroupMemberResponse } from "./groupmember.response";
 
 
 export class GroupMemberService{
@@ -19,6 +19,22 @@ export class GroupMemberService{
         this.UserRepository = dataSource.getRepository(User);
     }
     
+    async groupMember(member_id: string): Promise<GroupMemberResponse> {
+            try {
+                const group_member = await this.GroupMemberRepository.findOne({
+                    where: {member_id: member_id},
+                    relations: ["user", "group"]
+                })
+                if(!group_member){
+                    throw new Error("Group Member not found");
+                }
+                return group_member;
+            }
+            catch (err) {
+                console.log(err);
+                throw new Error("fetching Group member failed "+ err);
+            }
+        }
     async createMember(input: CreateGroupMemberInput): Promise<string> {
         try{
             const {group_id, user_id, user_role} = input;
@@ -50,12 +66,12 @@ export class GroupMemberService{
                     // await this.GroupMemberRepository.save(memberExist);
                 }
             }else{
-                await this.GroupMemberRepository.save({
-                    member_id: uuidv4(),
+                const groupMember = await this.GroupMemberRepository.create({
                     group: group,
                     user: user,
                     user_role: (user_role === "admin" ? GroupMember_Role.ADMIN : GroupMember_Role.MEMBER)
                 });
+                await this.GroupMemberRepository.save(groupMember);
             }
             return "Joined Group Successfully";
         }

@@ -13,7 +13,7 @@ export const dbdataSource: DataSourceOptions = {
     username: process.env.USER_NAME ,
     password: process.env.PASSWORD ,
     synchronize: false,
-    logging: true,
+    // logging: true, 
     migrations: ['src/database/migrations/*.{js,ts}'],
   };
   const dataSource = new DataSource(dbdataSource);

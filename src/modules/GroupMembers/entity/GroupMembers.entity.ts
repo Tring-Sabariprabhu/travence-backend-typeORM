@@ -27,12 +27,12 @@ export class GroupMember{
     @Field()
     user_role!: GroupMember_Role
 
-    @ManyToOne(()=> User, (user)=> user.joined_groups, {eager: true})
+    @ManyToOne(()=> User, (user)=> user.joined_groups)
     @JoinColumn({name: "user_id"})
     @Field(()=> User)
     user?: User
 
-    @ManyToOne(()=> Group, (group)=> group.group_members, {eager: true})
+    @ManyToOne(()=> Group, (group)=> group.group_members)
     @JoinColumn({name: "group_id"})
     @Field(()=> Group)
     group!: Group

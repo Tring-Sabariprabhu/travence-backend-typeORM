@@ -1,13 +1,16 @@
 import { Field, InputType, ObjectType } from "type-graphql";
 import { Activity, Trip_Status } from "./entity/trip.entity";
-import { GraphQLJSONObject } from "graphql-type-json";
-import { Column } from "typeorm";
 
 @InputType()
-export class CreateTripInput{
+export class ActivityInput{
+    @Field()
+    activity!: string
 
     @Field()
-    group_id!: string
+    budget!: number
+}
+@InputType()
+export class CreateTripInput{
 
     @Field()
     admin_id?: string
@@ -19,19 +22,40 @@ export class CreateTripInput{
     trip_description!: string
     
     @Field()
-    start_date!: Date
+    trip_start_date!: Date
     
     @Field()
-    days_count!: number
+    trip_days_count!: number
 
     @Field()
-    members?: string[]
+    trip_budget!: number
 
     @Field(()=> [String])
-    checklists!: string[]
+    trip_members?: string[]
 
-    @Field(()=> [Activity])
-    activities!: Activity[]
-    
+    @Field(()=> [String])
+    trip_checklists!: string[]
+
+    @Field(()=> [ActivityInput])
+    trip_activities!: ActivityInput[]
 } 
+@InputType()
+export class UpdateTripInput extends CreateTripInput{
+    @Field()
+    trip_id!: string
+}
+@InputType()
+export class JoinedTripsInput{
+    @Field()
+    member_id!: string
+}
 
+@InputType()
+export class TripInput{
+    
+    @Field()
+    member_id!: string
+
+    @Field()
+    trip_id!: string
+}
