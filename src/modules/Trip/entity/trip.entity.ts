@@ -6,7 +6,7 @@ import { TripMember } from "../../TripMember/entity/TripMember.entity";
 import { GraphQLJSONObject } from "graphql-type-json";
 
 export enum Trip_Status{
-    UPCOMING = 'upcoming',
+    PLANNED = 'planned',
     CANCELED = 'canceled',
     COMPLETED = 'completed'
 }
@@ -51,7 +51,7 @@ export class Trip{
     @Column({
         type: "enum",
         enum: Trip_Status,
-        default: Trip_Status.UPCOMING
+        default: Trip_Status.PLANNED
     })
     @Field()
     trip_status!: Trip_Status

@@ -93,14 +93,32 @@ export class GroupService {
     }
     async updateGroup(input: UpdateGroupInput): Promise<string> {
         try{
-            const {admin_id, group_name, group_description} = input;
+            const {user_id, group_id, group_name, group_description} = input;
+            const userExists = await this.UserRepository.findOne({
+                where: {user_id: user_id}
+            });
+            if(!userExists){
+                throw new Error("User not found");
+            }
+            const group = await this.GroupRepository.findOne({
+                where: {group_id: group_id},
+            });
+            if(!group){
+                throw new Error("Group not found!");
+            }
             const adminInGroup = await this.GroupMemberRepository.findOne({
                 where: {
-                    member_id: admin_id,
-                    user_role: GroupMember_Role.ADMIN}
+                    user: {
+                        user_id: user_id
+                    },
+                    group: {
+                        group_id: group_id
+                    },
+                    user_role: GroupMember_Role.ADMIN
+                }
             });
             if(!adminInGroup){
-                throw new Error("Access denied !");
+                throw new Error("Access denied! Only admin can change details");
             }
             const previousGroupDetails = await this.GroupRepository.findOne({
                 where: {group_id: adminInGroup?.group?.group_id}
@@ -121,18 +139,34 @@ export class GroupService {
     }
     async deleteGroup(input: DeleteGroupInput): Promise<string>{
         try{
-            const {admin_id} = input;
-            const adminInGroup = await this.GroupMemberRepository.findOne({
-                where: {member_id: admin_id}
+            const {user_id, group_id} = input;
+            const userExists = await this.UserRepository.findOne({
+                where: {user_id: user_id}
             });
-            if(!adminInGroup){
-                throw new Error("Access denied !");
+            if(!userExists){
+                throw new Error("User not found");
             }
             const group = await this.GroupRepository.findOne({
-                where: {created_by: {user_id: adminInGroup?.user?.user_id}}
+                where: {group_id: group_id},
+                relations: ["created_by"]
             });
             if(!group){
-                throw new Error("Access denied !");
+                throw new Error("Group not found!");
+            }else if(group?.created_by?.user_id !== user_id){
+                throw new Error("Access denied!");
+            }
+            const adminInGroup = await this.GroupMemberRepository.findOne({
+                where: {
+                    user: {
+                        user_id: user_id
+                    },
+                    group: {
+                        group_id: group_id
+                    }
+                }
+            });
+            if(!adminInGroup){
+                throw new Error("Access denied! You are not in Group");
             }
             await this.GroupRepository.softDelete({
                 group_id: group?.group_id

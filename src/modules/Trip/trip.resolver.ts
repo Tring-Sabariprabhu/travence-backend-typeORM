@@ -1,6 +1,6 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Trip } from "./entity/trip.entity";
-import {  CreateTripInput, JoinedTripsInput, TripInput, UpdateTripInput } from "./trip.input";
+import {  CreateTripInput, DeleteTripInput, JoinedTripsInput, TripInput, UpdateTripInput } from "./trip.input";
 import { TripService } from "./trip.service";
 import { TripResponse } from "./trip.response";
 
@@ -25,7 +25,14 @@ export class TripResolver{
     async createTrip(@Arg("input") input:CreateTripInput): Promise<string> {
         return this.TripService.createTrip(input);
     }
-    async updateTrip(@Arg("input") input: UpdateTripInput): Promise<string> {
+    @Mutation(()=> String)
+    async updateTrip(@Arg("input") input:UpdateTripInput): Promise<string> {
         return this.TripService.updateTrip(input);
     }
+
+    @Mutation(()=> String)
+    async deleteTrip(@Arg("input") input: DeleteTripInput): Promise<string> {
+        return this.TripService.deleteTrip(input);
+    }
+    
 }

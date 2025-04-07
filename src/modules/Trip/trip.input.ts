@@ -13,7 +13,7 @@ export class ActivityInput{
 export class CreateTripInput{
 
     @Field()
-    admin_id?: string
+    group_member_id?: string
 
     @Field()
     trip_name!: string
@@ -44,10 +44,23 @@ export class UpdateTripInput extends CreateTripInput{
     @Field()
     trip_id!: string
 }
+
+@InputType()
+export class DeleteTripInput{
+
+    @Field()
+    group_member_id!: string
+
+    @Field()
+    trip_id!: string
+}
 @InputType()
 export class JoinedTripsInput{
     @Field()
     member_id!: string
+
+    @Field()
+    filter_type!: string
 }
 
 @InputType()
