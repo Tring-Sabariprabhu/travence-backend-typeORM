@@ -1,7 +1,6 @@
 import dataSource from "../../database/data-source";
 import { User } from "./entity/User.entity";
 import { SigninInput, SignupInput, UpdateUserInput } from "./user.input";
-import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
 import { decryptPassword, encryptPassword } from "../../helper/Crypto/crypto";
 import dotenv from 'dotenv';
@@ -86,12 +85,12 @@ export class UserService {
                     await this.UserRepository.save(UserExists);
                 }
             } else {
-                await this.UserRepository.save({
-                    user_id: uuidv4(),
+                const userCreated = await this.UserRepository.create({
                     name: name,
                     email: email,
                     password: encryptedPassword
                 });
+                await this.UserRepository.save(userCreated);
             }
             const invitesCount = await this.GroupInviteRepository.count({
                 where: { email: email }

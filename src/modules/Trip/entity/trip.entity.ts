@@ -14,7 +14,7 @@ export enum Trip_Status{
 @ObjectType()
 export class Activity{
     @Field()
-    description!: string
+    activity!: string
 
     @Field()
     budget!: number
@@ -44,6 +44,10 @@ export class Trip{
     @Field()
     trip_days_count!: number
     
+    @Column()
+    @Field()
+    trip_budget!: number
+
     @Column({
         type: "enum",
         enum: Trip_Status,
@@ -52,14 +56,13 @@ export class Trip{
     @Field()
     trip_status!: Trip_Status
 
+    @Column({type: "jsonb", nullable: true})
+    @Field(()=> [Activity])
+    trip_activities!: Activity[]
 
     @Column({type: "jsonb", nullable: true})
     @Field(()=> [String])
     trip_checklists!: string[]
-
-    @Column({type: "jsonb", nullable: true})
-    @Field(()=> [Activity])
-    trip_activities!: Activity[]
 
     @ManyToOne(()=> Group, (group)=> group.trips)
     @JoinColumn({name: "group_id"})
@@ -84,6 +87,6 @@ export class Trip{
     deleted_at?: Date
 
     @OneToMany(()=> TripMember, (trip_member)=> trip_member.trip)
-    @Field(()=> [TripMember])
+    @Field(()=> [TripMember], {nullable: true})
     trip_members?: TripMember[]
 }

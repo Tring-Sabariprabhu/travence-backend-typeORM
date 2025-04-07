@@ -1,7 +1,7 @@
 import { Field, InputType } from "type-graphql";
 
 @InputType()
-export class CreateTripMembers{
+export class CreateTripMembersInput{
 
     @Field()
     group_id!: string
@@ -9,6 +9,6 @@ export class CreateTripMembers{
     @Field()
     trip_id!: string
     
-    @Field()
-    members!: string[]
+    @Field(()=> [String])
+    group_members!: string[]
 }

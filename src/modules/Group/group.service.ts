@@ -4,7 +4,6 @@ import { CreateGroupInput, DeleteGroupInput, GroupInput, GroupListInput, UpdateG
 import { GroupResponse } from "./group.respone";
 import { GroupMember, GroupMember_Role } from "../GroupMembers/entity/GroupMembers.entity";
 import { User } from "../User/entity/User.entity";
-import { v4 as uuidv4 } from "uuid";
 import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
 import { Repository } from "typeorm";
 
@@ -32,18 +31,6 @@ export class GroupService {
                         group_members: { user: { user_id } } 
                     },
                     relations: ["created_by"],
-                    select: {
-                        group_id: true,
-                        group_name: true,
-                        group_description: true,
-                        created_at: true,
-                        deleted_at: true,
-                        updated_at: true,
-                        created_by: {
-                            name: true,
-                            email: true
-                        }
-                    }
                 }
             )
                 
@@ -60,31 +47,7 @@ export class GroupService {
             const { group_id } = input;
             const group = await this.GroupRepository.findOne({
                 where: {group_id: group_id},
-                relations: ["group_members","created_by"],
-                select: {
-                    group_id: true,
-                    group_name: true,
-                    group_description: true,
-                    created_at: true,
-                    deleted_at: true,
-                    updated_at: true,
-                    created_by: {
-                        name: true,
-                        email: true,
-                        user_id: true
-                    },
-                    group_members: {
-                        member_id: true,
-                        user_role: true,
-                        joined_at: true,
-                        deleted_at: true,
-                        updated_at: true,
-                        user: {
-                            name: true,
-                            email: true,
-                        }
-                    }
-                }
+                relations: ["group_members","created_by", "group_members.user"]
             });
             if (!group)
                 throw new Error("Group not found");
@@ -105,9 +68,8 @@ export class GroupService {
             if (!user) {
                 throw new Error("User not found");
             }
-            const groupCreated = await this.GroupRepository.save(
+            const groupCreated = await this.GroupRepository.create(
                 {
-                    group_id: uuidv4(),
                     group_name: group_name,
                     group_description: group_description,
                     created_by: user
@@ -115,6 +77,7 @@ export class GroupService {
             );
             if (!groupCreated)
                 throw new Error("Created Group details not found");
+            await this.GroupRepository.save(groupCreated);
             await this.getGroupMemberResolver.createGroupMember(
                 {
                     group_id: groupCreated.group_id,
