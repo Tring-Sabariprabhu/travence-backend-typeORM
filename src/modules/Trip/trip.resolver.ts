@@ -2,7 +2,6 @@ import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Trip } from "./entity/trip.entity";
 import {  CreateTripInput, DeleteTripInput, JoinedTripsInput, TripInput, UpdateTripInput } from "./trip.input";
 import { TripService } from "./trip.service";
-import { TripResponse } from "./trip.response";
 
 @Resolver(Trip)
 export class TripResolver{
@@ -12,26 +11,26 @@ export class TripResolver{
         this.TripService = new TripService();
     }
 
-    @Query(()=> [TripResponse])
-    async joinedTrips(@Arg("input")  input: JoinedTripsInput): Promise<TripResponse[]> {
+    @Query(()=> [Trip])
+    async joinedTrips(@Arg("input")  input: JoinedTripsInput) {
         return this.TripService.joinedTrips(input);
     }
  
-    @Query(()=> TripResponse)
-    async trip(@Arg("input") input: TripInput): Promise<TripResponse> {
+    @Query(()=> Trip)
+    async trip(@Arg("input") input: TripInput) {
         return this.TripService.trip(input);
     }
     @Mutation(()=> String)
-    async createTrip(@Arg("input") input:CreateTripInput): Promise<string> {
+    async createTrip(@Arg("input") input:CreateTripInput){
         return this.TripService.createTrip(input);
     }
     @Mutation(()=> String)
-    async updateTrip(@Arg("input") input:UpdateTripInput): Promise<string> {
+    async updateTrip(@Arg("input") input:UpdateTripInput){
         return this.TripService.updateTrip(input);
     }
 
     @Mutation(()=> String)
-    async deleteTrip(@Arg("input") input: DeleteTripInput): Promise<string> {
+    async deleteTrip(@Arg("input") input: DeleteTripInput) {
         return this.TripService.deleteTrip(input);
     }
     

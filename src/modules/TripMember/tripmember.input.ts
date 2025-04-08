@@ -5,6 +5,9 @@ import { Field, InputType } from "type-graphql";
 export class TripMemberInput{
     @Field()
     group_member_id!: string
+
+    @Field()
+    trip_id!: string
 }
 @InputType()
 export class CreateTripMembersInput{

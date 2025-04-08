@@ -13,15 +13,15 @@ export class TripMemberResolver{
        
     }
     @Mutation(()=> String)
-    async createTripMembers(@Arg("input") input: CreateTripMembersInput): Promise<string> {
+    async createTripMembers(@Arg("input") input: CreateTripMembersInput) {
        return this.TripMemberService.createTripMembers(input);
     }
     @Mutation(()=> String)
-    async deleteTripMember(@Arg("input") input: DeleteTripMemberInput): Promise<string> {
+    async deleteTripMember(@Arg("input") input: DeleteTripMemberInput) {
         return this.TripMemberService.deleteTripMember(input);
     }
     @Query(()=> TripMember)
-    async tripMember(@Arg("input") input: TripMemberInput): Promise<TripMember> {
+    async tripMember(@Arg("input") input: TripMemberInput){
         return this.TripMemberService.tripMember(input);
     }
 }

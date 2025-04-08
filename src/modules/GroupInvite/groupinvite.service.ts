@@ -1,7 +1,7 @@
 import dataSource from "../../database/data-source"
 import { GroupMember, GroupMember_Role } from "../GroupMembers/entity/GroupMembers.entity";
 import { User } from "../User/entity/User.entity";
-import { GroupInvite, Invite_Status } from "./entity/GroupInvites.entity"
+import { GroupInvite, Invite_Status } from "./entity/GroupInvites.entity";
 import {
     GetInvitedListInput,
     GetGroupInvitesInput,
@@ -13,6 +13,8 @@ import { GroupInviteResponse } from "./groupinvite.response";
 import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
 import { Repository } from "typeorm";
 import { setMailAndSend } from "../../helper/mailing/mailing";
+import dotenv from 'dotenv';
+dotenv.config();
 
 export class GroupInviteService {
     private GroupInviteRepository: Repository<GroupInvite>;
@@ -26,7 +28,7 @@ export class GroupInviteService {
         this.getGroupMemberResolver = new GroupMemberResolver();
     }
 
-    async createGroupInvites(input: CreateGroupInviteInput): Promise<string> {
+    async createGroupInvites(input: CreateGroupInviteInput) {
         try {
             const { invited_by, emails } = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
@@ -61,9 +63,9 @@ export class GroupInviteService {
                             `<html><p>You have been invited by ${invited_by} to join the group "${group_name}" on Travence!</p><br>
                             <p>Click the link and Login with Travence</p><br>` +
                             (registered ?
-                                `<a href="https://2j2b6xw5-3000.inc1.devtunnels.ms/signin">Login Here</a></html>`
+                                `<a href="${process.env.SIGNIN_URL}">Login Here</a></html>`
                                 :
-                                `<a href="https://2j2b6xw5-3000.inc1.devtunnels.ms/signup">Sign Up Here</a>`
+                                `<a href="${process.env.SIGNUP_URL}">Sign Up Here</a>`
                             )
 
                     });
@@ -75,7 +77,7 @@ export class GroupInviteService {
             throw new Error("Inviting User failed " + err);
         }
     }
-    async resendGroupInvites(input: ResendAndDeleteGroupInvitesInput): Promise<string> {
+    async resendGroupInvites(input: ResendAndDeleteGroupInvitesInput) {
         try {
             const { invited_by, invites } = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
@@ -135,7 +137,7 @@ export class GroupInviteService {
             throw new Error("Resending Invites failled " + err);
         }
     }
-    async deleteGroupInvites(input: ResendAndDeleteGroupInvitesInput): Promise<string> {
+    async deleteGroupInvites(input: ResendAndDeleteGroupInvitesInput) {
         try {
             const { invited_by, invites } = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
@@ -159,7 +161,7 @@ export class GroupInviteService {
             throw new Error("Invites deleted failed " + err);
         }
     }
-    async getGroupInvitedList(input: GetInvitedListInput): Promise<GroupInviteResponse[]> {
+    async getGroupInvitedList(input: GetInvitedListInput) {
         try {
             const { admin_id } = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
@@ -182,7 +184,7 @@ export class GroupInviteService {
             throw new Error("fetching Invited List failed " + err);
         }
     }
-    async getGroupInvites(input: GetGroupInvitesInput): Promise<GroupInviteResponse[]> {
+    async getGroupInvites(input: GetGroupInvitesInput) {
         try {
             const { email } = input;
             const userExist = await this.UserRepository.findOne({
@@ -205,7 +207,7 @@ export class GroupInviteService {
             throw new Error("fetching Group Invites failed " + err);
         }
     }
-    async acceptGroupInvite(input: GroupInviteActionsInput): Promise<string> {
+    async acceptGroupInvite(input: GroupInviteActionsInput) {
         try {
             const { invite_id } = input;
             const inviteDetails = await this.GroupInviteRepository.findOne({
@@ -247,7 +249,7 @@ export class GroupInviteService {
             throw new Error("Accept Group Invite failed " + err);
         }
     }
-    async rejectGroupInvite(input: GroupInviteActionsInput): Promise<string> {
+    async rejectGroupInvite(input: GroupInviteActionsInput) {
         try {
             const { invite_id } = input;
             const inviteDetails = await this.GroupInviteRepository.findOne({

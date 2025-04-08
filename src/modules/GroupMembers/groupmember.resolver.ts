@@ -12,21 +12,21 @@ export class GroupMemberResolver{
         this.GroupMemberService = new GroupMemberService();
     }
     @Query(()=> GroupMemberResponse)
-    async groupMember(@Arg("input") input: GroupMemberInput): Promise<GroupMemberResponse> {
+    async groupMember(@Arg("input") input: GroupMemberInput) {
         return this.GroupMemberService.groupMember(input);
     }
     @Mutation(()=> String)
-    async createGroupMember(@Arg("input") input: CreateGroupMemberInput): Promise<string> {
+    async createGroupMember(@Arg("input") input: CreateGroupMemberInput) {
         return this.GroupMemberService.createMember(input);
     }
 
     @Mutation(()=> String)
-    async changeRole(@Arg("input") input: GroupMemberActionsInput): Promise<string> {
+    async changeRole(@Arg("input") input: GroupMemberActionsInput) {
         return this.GroupMemberService.changeRole(input);
     }
 
     @Mutation(()=> String)
-    async deleteGroupMember(@Arg("input") input: GroupMemberActionsInput): Promise<string> {
+    async deleteGroupMember(@Arg("input") input: GroupMemberActionsInput) {
         return this.GroupMemberService.deleteGroupMember(input);
     }
 }

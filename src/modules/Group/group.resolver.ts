@@ -13,26 +13,26 @@ export class GroupResolver{
     }
 
     @Query(()=> [GroupResponse])
-    async groupList(@Arg("input") input: GroupListInput): Promise<GroupResponse[]> {
+    async groupList(@Arg("input") input: GroupListInput) {
         return this.GroupService.groupList(input);
     }
     
     @Query(()=> GroupResponse)
-    async group(@Arg("input") input: GroupInput): Promise<GroupResponse>{
+    async group(@Arg("input") input: GroupInput){
         return this.GroupService.group(input);
     }
 
     @Mutation(()=> String)
-    async createGroup(@Arg("input") input: CreateGroupInput): Promise<string> {
+    async createGroup(@Arg("input") input: CreateGroupInput) {
         return this.GroupService.createGroup(input);
     }
 
     @Mutation(()=> String)
-    async updateGroup(@Arg("input") input: UpdateGroupInput): Promise<string> {
+    async updateGroup(@Arg("input") input: UpdateGroupInput) {
         return this.GroupService.updateGroup(input);
     }
     @Mutation(()=> String)
-    async deleteGroup(@Arg("input") input: DeleteGroupInput): Promise<string> {
+    async deleteGroup(@Arg("input") input: DeleteGroupInput){
         return this.GroupService.deleteGroup(input);
     }
     

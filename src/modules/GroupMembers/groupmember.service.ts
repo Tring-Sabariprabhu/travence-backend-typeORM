@@ -19,7 +19,7 @@ export class GroupMemberService{
         this.UserRepository = dataSource.getRepository(User);
     }
     
-    async groupMember(input: GroupMemberInput): Promise<GroupMemberResponse> {
+    async groupMember(input: GroupMemberInput){
             try {
                 const {user_id, group_id} = input;
                 const user = await this.UserRepository.findOne({
@@ -54,7 +54,7 @@ export class GroupMemberService{
                 throw new Error("fetching Group member failed "+ err);
             }
         }
-    async createMember(input: CreateGroupMemberInput): Promise<string> {
+    async createMember(input: CreateGroupMemberInput){
         try{
             const {group_id, user_id, user_role} = input;
 
@@ -81,8 +81,6 @@ export class GroupMemberService{
                     throw new Error("Member already Exist");
                 }else{
                     await this.GroupMemberRepository.restore(memberExist?.member_id);
-                    // memberExist.user_role = GroupMember_Role.MEMBER;
-                    // await this.GroupMemberRepository.save(memberExist);
                 }
             }else{
                 const groupMember = await this.GroupMemberRepository.create({
@@ -99,7 +97,7 @@ export class GroupMemberService{
             throw new Error("Joining to Group failed "+ err);
         }
     }
-    async changeRole(input: GroupMemberActionsInput): Promise<string> {
+    async changeRole(input: GroupMemberActionsInput) {
         try{
             const {admin_id, member_id} = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({
@@ -125,7 +123,7 @@ export class GroupMemberService{
             throw new Error("Changing Role failed "+ err);
         }
     }
-    async deleteGroupMember(input: GroupMemberActionsInput): Promise<string>{
+    async deleteGroupMember(input: GroupMemberActionsInput){
         try{
             const {admin_id, member_id} = input;
             const adminInGroup = await this.GroupMemberRepository.findOne({

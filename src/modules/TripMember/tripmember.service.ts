@@ -21,9 +21,9 @@ export class TripMemberService {
         this.TripMemberRepository = dataSource.getRepository(TripMember);
     }
 
-    async tripMember(input : TripMemberInput): Promise<TripMember> {
+    async tripMember(input : TripMemberInput){
         try{
-            const {group_member_id} = input;
+            const {group_member_id, trip_id } = input;
             const group_member = await this.GroupMemberRepository.findOne({
                 where: {member_id: group_member_id}
             });
@@ -33,7 +33,10 @@ export class TripMemberService {
             const trip_member = await this.TripMemberRepository.findOne({
                 where: {
                     group_member: {
-                        member_id: group_member_id
+                        member_id: group_member_id,
+                    },
+                    trip: {
+                        trip_id: trip_id
                     }
                 },
                 relations: ["group_member"],
@@ -48,7 +51,7 @@ export class TripMemberService {
             throw new Error("fetching Trip Member failed "+ err);
         }
     }
-    async createTripMembers(input: CreateTripMembersInput): Promise<string> {
+    async createTripMembers(input: CreateTripMembersInput){
         try {
             const { trip_id, group_id, group_members } = input;
             const group = await this.GroupRepository.findOne({
@@ -113,7 +116,7 @@ export class TripMemberService {
             throw new Error("Inviting Group Members to join Trip failed");
         }
     }
-    async deleteTripMember(input: DeleteTripMemberInput): Promise<string> {
+    async deleteTripMember(input: DeleteTripMemberInput) {
         try{
             const {trip_member_id} = input;
             const trip_member = await this.TripMemberRepository.findOne({
