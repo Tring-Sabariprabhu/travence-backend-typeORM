@@ -65,9 +65,6 @@ export class JoinedTripsInput{
 
 @InputType()
 export class TripInput{
-    
-    @Field()
-    member_id!: string
 
     @Field()
     trip_id!: string

@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import { LoginResponse } from "./user.response";
 import { GroupInvite } from "../GroupInvite/entity/GroupInvites.entity";
 import { Repository } from "typeorm";
+import { MyContext } from "../../server";
 dotenv.config();
 console.log()
 
@@ -20,25 +21,26 @@ export class UserService {
         }
    
 
-    async getCurrentUser(token: string): Promise<User> {
+    async getCurrentUser(ctx: MyContext) {
         try {
-            if (!process.env.JWT_SECRET_KEY) {
-                throw new Error("Key not found");
+            if(!ctx?.user?.user_id){
+                throw new Error("No Input found");
             }
-            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY) as { user_id: string };
-            const user = await this.UserRepository.findOneBy({ user_id: decoded.user_id });
-
-            if (!user) {
+            const user = await this.UserRepository.findOne({
+                where: {
+                    user_id: ctx?.user?.user_id
+                }
+            });
+            if(!user){
                 throw new Error("User not found");
             }
-
             return user;
         }
         catch (err) {
-            throw new Error("Get User details failed " + err);
+            throw new Error("fecthing user details failed" + err);
         }
     }
-    async signin(input: SigninInput): Promise<LoginResponse> {
+    async signin(input: SigninInput) {
         try {
             const { email, password } = input;
             const user = await this.UserRepository.findOneBy({
@@ -66,7 +68,7 @@ export class UserService {
         }
 
     }
-    async signup(input: SignupInput): Promise<string> {
+    async signup(input: SignupInput){
         const { name, email, password } = input;
         try {
             const UserExists = await this.UserRepository.findOne({
@@ -107,7 +109,7 @@ export class UserService {
             throw new Error("Registeration failed " + err);
         }
     }
-    async updateUser(input: UpdateUserInput): Promise<string> {
+    async updateUser(input: UpdateUserInput) {
         try {
             const { user_id, name, password } = input;
             const user = await this.UserRepository.findOne({

@@ -4,7 +4,6 @@ import { Group } from "../Group/entity/Group.entity";
 import { GroupMember, GroupMember_Role } from "../GroupMembers/entity/GroupMembers.entity";
 import { Trip, Trip_Status } from "./entity/trip.entity";
 import {  CreateTripInput, DeleteTripInput, JoinedTripsInput, TripInput, UpdateTripInput } from "./trip.input";
-import { TripResponse } from "./trip.response";
 import { TripMemberResolver } from "../TripMember/tripmember.resolver";
 import { TripMember } from "../TripMember/entity/TripMember.entity";
 
@@ -23,7 +22,7 @@ export class TripService{
         this.TripMemberRepository = dataSource.getRepository(TripMember);
         this.TripMemberResolver = new TripMemberResolver();
     }
-    async joinedTrips(input: JoinedTripsInput): Promise<TripResponse[]> {
+    async joinedTrips(input: JoinedTripsInput) {
         try{
             const { member_id , filter_type } = input;
             if(filter_type !== "all" && filter_type !== Trip_Status.PLANNED && filter_type !== Trip_Status.CANCELED && filter_type !== Trip_Status.COMPLETED){
@@ -73,25 +72,9 @@ export class TripService{
             throw new Error("fetching Trips failed "+ err);
         }
     }
-    async trip(input: TripInput): Promise<TripResponse> {
+    async trip(input: TripInput) {
         try{
-            const {member_id, trip_id} = input;
-            const member = await this.GroupMemberRepository.findOne({
-                where: {
-                    member_id: member_id
-                }
-            })
-            if(!member){
-                throw new Error("Member not found in Group");
-            }
-            const group = await this.GroupRepository.findOne({
-                where: {
-                    group_id: member?.group?.group_id
-                }
-            });
-            if(!group){
-                throw new Error("Group not found");
-            }
+            const { trip_id} = input;
             const trip = await this.TripRepository.findOne({
                 where: {trip_id: trip_id},
                 relations: [
@@ -100,7 +83,15 @@ export class TripService{
                     "group", 
                     "trip_members", 
                     "trip_members.group_member", 
-                    "trip_members.group_member.user"],
+                    "trip_members.group_member.user",
+                    "expense_remainders",
+                    "expense_remainders.toPay",
+                    "expense_remainders.paidBy",
+                    "expense_remainders.toPay.group_member",
+                    "expense_remainders.paidBy.group_member",
+                    "expense_remainders.toPay.group_member.user",
+                    "expense_remainders.paidBy.group_member.user",
+                ],
             })
             if(!trip){
                 throw new Error("Trip not found");
@@ -112,7 +103,7 @@ export class TripService{
             throw new Error("fetching Trip failed "+ err);
         }
     }
-    async createTrip(input: CreateTripInput): Promise<string> {
+    async createTrip(input: CreateTripInput){
         try{
             const {
                     group_member_id, 
@@ -171,7 +162,7 @@ export class TripService{
             throw new Error("Creating Trip failed "+ err);
         }
     }
-    async updateTrip(input: UpdateTripInput): Promise<string> {
+    async updateTrip(input: UpdateTripInput) {
         try{
             const {
                     group_member_id, 
@@ -213,7 +204,7 @@ export class TripService{
             trip.trip_description = trip_description;
             trip.trip_start_date = trip_start_date;
             trip.trip_days_count = trip_days_count;
-            trip.trip_budget = trip.trip_budget;
+            trip.trip_budget = trip_budget;
             trip.trip_activities = trip_activities;
             trip.trip_checklists = trip_checklists;
 
@@ -232,7 +223,7 @@ export class TripService{
             throw new Error("Updating Trip failed "+ err);
         }
     }
-    async deleteTrip(input: DeleteTripInput): Promise<string> {
+    async deleteTrip(input: DeleteTripInput) {
         try{
             const {group_member_id, trip_id} = input;
             const group_member = await this.GroupMemberRepository.findOne({

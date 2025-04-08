@@ -7,8 +7,16 @@ import { UserResolver } from "./modules/User/user.resolver";
 import { TripResolver } from "./modules/Trip/trip.resolver";
 import { TripMemberResolver } from "./modules/TripMember/tripmember.resolver";
 
+import { ExpenseResolver } from "./modules/Expense/expense.resolver";
+
 export const createSchema = () =>
     buildSchema({
-        resolvers: [UserResolver, GroupResolver,GroupMemberResolver, GroupInviteResolver, TripResolver, TripMemberResolver],
+        resolvers: [UserResolver, 
+                    GroupResolver,
+                    GroupMemberResolver, 
+                    GroupInviteResolver, 
+                    TripResolver, 
+                    TripMemberResolver,
+                    ExpenseResolver],
         validate: false,
     });

@@ -4,6 +4,7 @@ import { GroupMember } from "../../GroupMembers/entity/GroupMembers.entity";
 import { Group } from "../../Group/entity/Group.entity";
 import { TripMember } from "../../TripMember/entity/TripMember.entity";
 import { GraphQLJSONObject } from "graphql-type-json";
+import { Expense } from "../../Expense/entity/expense.entity";
 
 export enum Trip_Status{
     PLANNED = 'planned',
@@ -89,4 +90,8 @@ export class Trip{
     @OneToMany(()=> TripMember, (trip_member)=> trip_member.trip)
     @Field(()=> [TripMember], {nullable: true})
     trip_members?: TripMember[]
+
+    @OneToMany(()=> Expense, (expense)=> expense.trip)
+    @Field(()=>[Expense], {nullable: true})
+    expense_remainders?: Expense[]
 }

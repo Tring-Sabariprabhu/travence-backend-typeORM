@@ -22,7 +22,7 @@ export class GroupService {
    }
     
 
-    async groupList(input: GroupListInput): Promise<GroupResponse[]> {
+    async groupList(input: GroupListInput) {
         try {
             const { user_id } = input;
             const groups = await this.GroupRepository.find(
@@ -42,7 +42,7 @@ export class GroupService {
             throw new Error("fetching Group List failed " + err);
         }
     }
-    async group(input: GroupInput): Promise<GroupResponse> {
+    async group(input: GroupInput) {
         try {
             const { group_id } = input;
             const group = await this.GroupRepository.findOne({
@@ -59,7 +59,7 @@ export class GroupService {
         }
     }
    
-    async createGroup(input: CreateGroupInput): Promise<string> {
+    async createGroup(input: CreateGroupInput) {
         try {
             const { created_by, group_name, group_description } = input;
             const user = await this.UserRepository.findOne(
@@ -91,7 +91,7 @@ export class GroupService {
             throw new Error("Creating Group failed " + err);
         }
     }
-    async updateGroup(input: UpdateGroupInput): Promise<string> {
+    async updateGroup(input: UpdateGroupInput) {
         try{
             const {user_id, group_id, group_name, group_description} = input;
             const userExists = await this.UserRepository.findOne({
@@ -137,7 +137,7 @@ export class GroupService {
             throw new Error("Updating Group details failed "+ err);
         }
     }
-    async deleteGroup(input: DeleteGroupInput): Promise<string>{
+    async deleteGroup(input: DeleteGroupInput){
         try{
             const {user_id, group_id} = input;
             const userExists = await this.UserRepository.findOne({

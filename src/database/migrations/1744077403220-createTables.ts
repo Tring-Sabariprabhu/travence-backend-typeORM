@@ -1,9 +1,10 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateTables1743923126281 implements MigrationInterface {
-    name = 'CreateTables1743923126281'
+export class CreateTables1744077403220 implements MigrationInterface {
+    name = 'CreateTables1744077403220'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE TABLE "expenses" ("expense_id" uuid NOT NULL DEFAULT uuid_generate_v4(), "amount" integer NOT NULL, "member1" uuid, "member2" uuid, "trip_id" uuid, CONSTRAINT "PK_e05b03cdc63e9849adcebeb0118" PRIMARY KEY ("expense_id"))`);
         await queryRunner.query(`CREATE TABLE "trip_members" ("trip_member_id" uuid NOT NULL DEFAULT uuid_generate_v4(), "joined_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "trip_id" uuid, "group_member_id" uuid, CONSTRAINT "PK_e6db0a29e8fa19ef6e66e8e91d7" PRIMARY KEY ("trip_member_id"))`);
         await queryRunner.query(`CREATE TYPE "public"."trips_trip_status_enum" AS ENUM('planned', 'canceled', 'completed')`);
         await queryRunner.query(`CREATE TABLE "trips" ("trip_id" uuid NOT NULL DEFAULT uuid_generate_v4(), "trip_name" character varying NOT NULL, "trip_description" character varying NOT NULL, "trip_start_date" TIMESTAMP NOT NULL, "trip_days_count" integer NOT NULL, "trip_budget" integer NOT NULL, "trip_status" "public"."trips_trip_status_enum" NOT NULL DEFAULT 'planned', "trip_activities" jsonb, "trip_checklists" jsonb, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "group_id" uuid, "created_by" uuid, CONSTRAINT "PK_e3e5cd900b55f400f5eb4baf237" PRIMARY KEY ("trip_id"))`);
@@ -13,6 +14,9 @@ export class CreateTables1743923126281 implements MigrationInterface {
         await queryRunner.query(`CREATE TYPE "public"."group_members_user_role_enum" AS ENUM('admin', 'member')`);
         await queryRunner.query(`CREATE TABLE "group_members" ("member_id" uuid NOT NULL DEFAULT uuid_generate_v4(), "user_role" "public"."group_members_user_role_enum" NOT NULL DEFAULT 'member', "joined_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "user_id" uuid, "group_id" uuid, CONSTRAINT "PK_dd36c2f163638fffa2edd4e44f2" PRIMARY KEY ("member_id"))`);
         await queryRunner.query(`CREATE TABLE "users" ("user_id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying(100) NOT NULL, "email" character varying(50) NOT NULL, "password" character varying(255) NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_96aac72f1574b88752e9fb00089" PRIMARY KEY ("user_id"))`);
+        await queryRunner.query(`ALTER TABLE "expenses" ADD CONSTRAINT "FK_38127b6768c21af7aade1146e8e" FOREIGN KEY ("member1") REFERENCES "trip_members"("trip_member_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "expenses" ADD CONSTRAINT "FK_022fd7fe3aaab9161c4f95a2553" FOREIGN KEY ("member2") REFERENCES "trip_members"("trip_member_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "expenses" ADD CONSTRAINT "FK_bf6ee0000d1ba3f09285986e14e" FOREIGN KEY ("trip_id") REFERENCES "trips"("trip_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "trip_members" ADD CONSTRAINT "FK_2bc25d7b7dd3984a649d49bb9a7" FOREIGN KEY ("trip_id") REFERENCES "trips"("trip_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "trip_members" ADD CONSTRAINT "FK_7764fbc6b95dfc4d4fc49c75494" FOREIGN KEY ("group_member_id") REFERENCES "group_members"("member_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "trips" ADD CONSTRAINT "FK_022d674880260ca1584d7452534" FOREIGN KEY ("group_id") REFERENCES "groups"("group_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
@@ -32,6 +36,9 @@ export class CreateTables1743923126281 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "trips" DROP CONSTRAINT "FK_022d674880260ca1584d7452534"`);
         await queryRunner.query(`ALTER TABLE "trip_members" DROP CONSTRAINT "FK_7764fbc6b95dfc4d4fc49c75494"`);
         await queryRunner.query(`ALTER TABLE "trip_members" DROP CONSTRAINT "FK_2bc25d7b7dd3984a649d49bb9a7"`);
+        await queryRunner.query(`ALTER TABLE "expenses" DROP CONSTRAINT "FK_bf6ee0000d1ba3f09285986e14e"`);
+        await queryRunner.query(`ALTER TABLE "expenses" DROP CONSTRAINT "FK_022fd7fe3aaab9161c4f95a2553"`);
+        await queryRunner.query(`ALTER TABLE "expenses" DROP CONSTRAINT "FK_38127b6768c21af7aade1146e8e"`);
         await queryRunner.query(`DROP TABLE "users"`);
         await queryRunner.query(`DROP TABLE "group_members"`);
         await queryRunner.query(`DROP TYPE "public"."group_members_user_role_enum"`);
@@ -41,6 +48,7 @@ export class CreateTables1743923126281 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "trips"`);
         await queryRunner.query(`DROP TYPE "public"."trips_trip_status_enum"`);
         await queryRunner.query(`DROP TABLE "trip_members"`);
+        await queryRunner.query(`DROP TABLE "expenses"`);
     }
 
 }
