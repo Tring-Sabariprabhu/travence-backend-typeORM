@@ -1,5 +1,11 @@
 import { Field, InputType } from "type-graphql";
 
+
+@InputType()
+export class TripMemberInput{
+    @Field()
+    group_member_id!: string
+}
 @InputType()
 export class CreateTripMembersInput{
 
@@ -11,4 +17,10 @@ export class CreateTripMembersInput{
     
     @Field(()=> [String])
     group_members!: string[]
+}
+
+@InputType()
+export class DeleteTripMemberInput{
+    @Field()
+    trip_member_id!: string
 }

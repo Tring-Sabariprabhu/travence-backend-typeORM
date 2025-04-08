@@ -34,6 +34,7 @@ export class GroupInviteService {
                     member_id: invited_by,
                     user_role: GroupMember_Role.ADMIN
                 },
+                relations: ["group", "user"]
             })
             if (adminInGroup === null) {
                 throw new Error("Access denied !");
@@ -81,7 +82,8 @@ export class GroupInviteService {
                 where: {
                     member_id: invited_by,
                     user_role: GroupMember_Role.ADMIN
-                }
+                },
+                relations: ["group", "user"]
             });
             if (!adminInGroup) {
                 throw new Error("Access denied !");

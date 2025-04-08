@@ -3,7 +3,7 @@ import dataSource from "../../database/data-source";
 import { Group } from "../Group/entity/Group.entity";
 import { User } from "../User/entity/User.entity";
 import { GroupMember, GroupMember_Role } from "./entity/GroupMembers.entity";
-import {  CreateGroupMemberInput, GroupMemberActionsInput } from "./groupmember.input";
+import {  CreateGroupMemberInput, GroupMemberActionsInput, GroupMemberInput } from "./groupmember.input";
 import { GroupMemberResponse } from "./groupmember.response";
 
 
@@ -19,12 +19,31 @@ export class GroupMemberService{
         this.UserRepository = dataSource.getRepository(User);
     }
     
-    async groupMember(member_id: string): Promise<GroupMemberResponse> {
+    async groupMember(input: GroupMemberInput): Promise<GroupMemberResponse> {
             try {
-                const group_member = await this.GroupMemberRepository.findOne({
-                    where: {member_id: member_id},
-                    relations: ["user", "group"]
+                const {user_id, group_id} = input;
+                const user = await this.UserRepository.findOne({
+                    where: {user_id: user_id}
+                });
+                if(!user){
+                    throw new Error("User not found");
+                }
+                const group = await this.GroupRepository.findOne({
+                    where: {group_id: group_id}
                 })
+                if(!group){
+                    throw new Error("Group not found");
+                }
+                const group_member = await this.GroupMemberRepository.findOne({
+                    where: {
+                        user: {
+                            user_id: user_id
+                        },
+                        group: {
+                            group_id: group_id
+                        }
+                    },
+                });
                 if(!group_member){
                     throw new Error("Group Member not found");
                 }

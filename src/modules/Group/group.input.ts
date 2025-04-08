@@ -33,8 +33,11 @@ export class CreateGroupInput{
 @InputType()
 export class UpdateGroupInput{
     @Field()
-    admin_id!: string
+    user_id!: string
 
+    @Field()
+    group_id!: string
+    
     @Field()
     group_name!: string
 
@@ -45,5 +48,8 @@ export class UpdateGroupInput{
 @InputType()
 export class DeleteGroupInput{
     @Field()
-    admin_id!: string
+    user_id!: string
+
+    @Field()
+    group_id!: string
 }

@@ -4,6 +4,14 @@ import { User } from "../User/entity/User.entity";
 import { Group } from "../Group/entity/Group.entity";
 
 @InputType()
+export class GroupMemberInput{
+    @Field()
+    user_id!: string
+
+    @Field()
+    group_id!: string
+}
+@InputType()
 export class CreateGroupMemberInput{
     @Field()
     group_id!: string

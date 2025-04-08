@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
 import { GroupMember } from "../../GroupMembers/entity/GroupMembers.entity";
 import { Group } from "../../Group/entity/Group.entity";
 
