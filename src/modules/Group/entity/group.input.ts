@@ -1,14 +1,5 @@
 import { Field, InputType } from "type-graphql";
-import { User } from "../User/entity/User.entity";
 
-
-@InputType()
-export class GroupListInput{
-
-    @Field()
-    user_id!: string
-
-}
 
 @InputType()
 export class GroupInput{
@@ -32,8 +23,6 @@ export class CreateGroupInput{
 
 @InputType()
 export class UpdateGroupInput{
-    @Field()
-    user_id!: string
 
     @Field()
     group_id!: string
@@ -47,8 +36,6 @@ export class UpdateGroupInput{
 
 @InputType()
 export class DeleteGroupInput{
-    @Field()
-    user_id!: string
 
     @Field()
     group_id!: string

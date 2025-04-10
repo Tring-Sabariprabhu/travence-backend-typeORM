@@ -36,5 +36,6 @@ export class GroupInvite {
 
     @ManyToOne(() => GroupMember, (member) => member.invited_list)
     @JoinColumn({name: "invited_by"})
+    @Field(()=> GroupMember)
     invited_by!: GroupMember;
 }

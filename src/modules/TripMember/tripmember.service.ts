@@ -2,7 +2,7 @@ import { Repository } from "typeorm";
 import { GroupMember } from "../GroupMembers/entity/GroupMembers.entity";
 import dataSource from "../../database/data-source";
 import { TripMember } from "./entity/TripMember.entity";
-import { CreateTripMembersInput, DeleteTripMemberInput, TripMemberInput } from "./tripmember.input";
+import { CreateTripMembersInput, DeleteTripMemberInput, TripMemberInput } from "./entity/tripmember.input";
 import { Group } from "../Group/entity/Group.entity";
 import { Trip } from "../Trip/entity/trip.entity";
 import { setMailAndSend } from "../../helper/mailing/mailing";

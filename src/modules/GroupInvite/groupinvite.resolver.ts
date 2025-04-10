@@ -1,8 +1,7 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { GroupInvite } from "./entity/GroupInvites.entity";
-import {  CreateGroupInviteInput, GetGroupInvitesInput, GetInvitedListInput, GroupInviteActionsInput, ResendAndDeleteGroupInvitesInput } from "./groupinvite.input";
+import {  CreateGroupInviteInput, GetGroupInvitesInput, GetInvitedListInput, GroupInviteActionsInput, GroupInviteInput, ResendAndDeleteGroupInvitesInput } from "./entity/groupinvite.input";
 import { GroupInviteService } from "./groupinvite.service";
-import { GroupInviteResponse } from "./groupinvite.response";
 
 @Resolver(GroupInvite)
 export class GroupInviteResolver{
@@ -11,13 +10,19 @@ export class GroupInviteResolver{
     constructor(){
         this.GroupInviteService = new GroupInviteService();
     }
-
-    @Query(()=> [GroupInviteResponse])
+    @Query(()=> GroupInvite)
+    async getGroupInvite(@Arg("input") input: GroupInviteInput) {
+        return this.GroupInviteService.getGroupInvite(input);
+    }
+    @Query(()=> Number)
+    async getGroupInvitedListCount(@Arg("admin_id") admin_id: string) {
+        return this.GroupInviteService.getGroupInvitedListCount(admin_id);
+    }
+    @Query(()=> [GroupInvite])
     async getGroupInvitedList(@Arg("input") input: GetInvitedListInput) {
         return this.GroupInviteService.getGroupInvitedList(input);
     }
-
-    @Query(()=> [GroupInviteResponse])
+    @Query(()=> [GroupInvite])
     async getGroupInvites(@Arg("input") input: GetGroupInvitesInput){
         return this.GroupInviteService.getGroupInvites(input);
     }

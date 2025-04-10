@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType } from "type-graphql";
-import { Activity, Trip_Status } from "./entity/trip.entity";
+import { Activity, Trip_Status } from "./trip.entity";
 
 @InputType()
 export class ActivityInput{

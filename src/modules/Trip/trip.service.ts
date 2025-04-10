@@ -3,7 +3,7 @@ import dataSource from "../../database/data-source";
 import { Group } from "../Group/entity/Group.entity";
 import { GroupMember, GroupMember_Role } from "../GroupMembers/entity/GroupMembers.entity";
 import { Trip, Trip_Status } from "./entity/trip.entity";
-import {  CreateTripInput, DeleteTripInput, JoinedTripsInput, TripInput, UpdateTripInput } from "./trip.input";
+import {  CreateTripInput, DeleteTripInput, JoinedTripsInput, TripInput, UpdateTripInput } from "./entity/trip.input";
 import { TripMemberResolver } from "../TripMember/tripmember.resolver";
 import { TripMember } from "../TripMember/entity/TripMember.entity";
 
