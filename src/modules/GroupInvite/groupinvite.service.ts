@@ -7,27 +7,119 @@ import {
     GetGroupInvitesInput,
     CreateGroupInviteInput,
     GroupInviteActionsInput,
-    ResendAndDeleteGroupInvitesInput
-} from "./groupinvite.input";
-import { GroupInviteResponse } from "./groupinvite.response";
+    ResendAndDeleteGroupInvitesInput,
+    GroupInviteInput
+} from "./entity/groupinvite.input";
 import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
 import { Repository } from "typeorm";
 import { setMailAndSend } from "../../helper/mailing/mailing";
 import dotenv from 'dotenv';
+import { GroupMemberService } from "../GroupMembers/groupmember.service";
 dotenv.config();
 
 export class GroupInviteService {
     private GroupInviteRepository: Repository<GroupInvite>;
     private GroupMemberRepository: Repository<GroupMember>;
     private UserRepository: Repository<User>;
-    private getGroupMemberResolver: GroupMemberResolver;
+    private GroupMemberService: GroupMemberService;
     constructor() {
         this.GroupInviteRepository = dataSource.getRepository(GroupInvite);
         this.GroupMemberRepository = dataSource.getRepository(GroupMember);
         this.UserRepository = dataSource.getRepository(User);
-        this.getGroupMemberResolver = new GroupMemberResolver();
+        this.GroupMemberService = new GroupMemberService();
     }
-
+    async getGroupInvite(input: GroupInviteInput) {
+        const { email, admin_id } = input;
+        const adminInGroup = await this.GroupMemberRepository.findOne({
+            where: {
+                member_id: admin_id,
+                user_role: GroupMember_Role.ADMIN
+            }
+        })
+        if (!adminInGroup) {
+            throw new Error("Access denied !");
+        }
+        const invite = await this.GroupInviteRepository.findOne({
+            where: {
+                invited_by: {
+                    member_id: admin_id
+                },
+                email: email
+            },
+        });
+        if (!invite) {
+            throw new Error("Invite not found");
+        }
+        return invite;
+    }
+    async getGroupInvitedListCount(admin_id: string) {
+        try {
+            const adminInGroup = await this.GroupMemberRepository.findOne({
+                where: {
+                    member_id: admin_id,
+                    user_role: GroupMember_Role.ADMIN
+                }
+            })
+            if (!adminInGroup) {
+                throw new Error("Access denied !");
+            }
+            const listCount = await this.GroupInviteRepository.count({
+                where: { invited_by: { member_id: admin_id } },
+            });
+            return listCount;
+        }
+        catch (err) {
+            throw new Error("fetching Count failed" + err);
+        }
+    }
+    async getGroupInvitedList(input: GetInvitedListInput) {
+        try {
+            const { admin_id, limit, offset } = input;
+            const adminInGroup = await this.GroupMemberRepository.findOne({
+                where: {
+                    member_id: admin_id,
+                    user_role: GroupMember_Role.ADMIN
+                }
+            })
+            if (!adminInGroup) {
+                throw new Error("Access denied !");
+            }
+            const invitedList = await this.GroupInviteRepository.find({
+                where: { invited_by: { member_id: admin_id } },
+                take: limit,
+                skip: offset,
+                order: { invited_at: "ASC" },
+            });
+            return invitedList;
+        }
+        catch (err) {
+            console.log(err);
+            throw new Error("fetching Invited List failed " + err);
+        }
+    }
+    async getGroupInvites(input: GetGroupInvitesInput) {
+        try {
+            const { email } = input;
+            const userExist = await this.UserRepository.findOne({
+                where: { email: email, }
+            });
+            if (!userExist) {
+                throw new Error("User not found");
+            }
+            const invites = await this.GroupInviteRepository.find({
+                where: {
+                    email: email,
+                    invite_status: Invite_Status.INVITED
+                },
+                relations: ["invited_by", "invited_by.group", "invited_by.user"],
+            });
+            return invites;
+        }
+        catch (err) {
+            console.log(err);
+            throw new Error("fetching Group Invites failed " + err);
+        }
+    }
     async createGroupInvites(input: CreateGroupInviteInput) {
         try {
             const { invited_by, emails } = input;
@@ -41,7 +133,33 @@ export class GroupInviteService {
             if (adminInGroup === null) {
                 throw new Error("Access denied !");
             }
+            let sentCount = 0;
             for (const email of emails) {
+                const inviteExists = await this.GroupInviteRepository.findOne({
+                    where: {
+                        invited_by:
+                        {
+                            member_id: adminInGroup?.member_id,
+                        },
+                        email: email
+                    }
+                })
+                if (inviteExists) {
+                    continue;
+                }
+                const group_member_Exist = await this.GroupMemberRepository.findOne({
+                    where: {
+                        user: {
+                            email: email
+                        },
+                        group: {
+                            group_id: adminInGroup?.group?.group_id
+                        }
+                    }
+                })
+                if (group_member_Exist) {
+                    continue;
+                }
                 const userExist = await this.UserRepository.findOne({
                     where: { email: email },
                 })
@@ -69,6 +187,10 @@ export class GroupInviteService {
                             )
 
                     });
+                sentCount++;
+            }
+            if (sentCount < 1) {
+                throw new Error("No Invite Send");
             }
             return "Invites Sent Successfully";
         }
@@ -97,6 +219,7 @@ export class GroupInviteService {
                 if (!inviteDetails) {
                     continue;
                 }
+
                 const userExist = await this.UserRepository.findOne({
                     where: { email: inviteDetails.email }
                 });
@@ -114,20 +237,20 @@ export class GroupInviteService {
                 const email = userExist?.email;
                 const invited_by = adminInGroup?.user?.name;
                 const group_name = adminInGroup?.group?.group_name;
-                if(email)
-                setMailAndSend(
-                    {
-                        destinationEmail: email,
-                        subject: "Invite to Join Group in Travence",
-                        message:
-                            `<html><p>You have been invited by ${invited_by} to join the group "${group_name}" on Travence!</p><br>
+                if (email)
+                    setMailAndSend(
+                        {
+                            destinationEmail: email,
+                            subject: "Invite to Join Group in Travence",
+                            message:
+                                `<html><p>You have been invited by ${invited_by} to join the group "${group_name}" on Travence!</p><br>
                             <p>Click the link and Login with Travence</p><br>` +
-                            (registered ?
-                                `<a href="https://2j2b6xw5-3000.inc1.devtunnels.ms/signin">Login Here</a></html>`
-                                :
-                                `<a href="https://2j2b6xw5-3000.inc1.devtunnels.ms/signup">Sign Up Here</a>`
-                            )
-                    });
+                                (registered ?
+                                    `<a href="https://2j2b6xw5-3000.inc1.devtunnels.ms/signin">Login Here</a></html>`
+                                    :
+                                    `<a href="https://2j2b6xw5-3000.inc1.devtunnels.ms/signup">Sign Up Here</a>`
+                                )
+                        });
 
             }
             return "Invites Resent Successfully";
@@ -161,52 +284,6 @@ export class GroupInviteService {
             throw new Error("Invites deleted failed " + err);
         }
     }
-    async getGroupInvitedList(input: GetInvitedListInput) {
-        try {
-            const { admin_id } = input;
-            const adminInGroup = await this.GroupMemberRepository.findOne({
-                where: {
-                    member_id: admin_id,
-                    user_role: GroupMember_Role.ADMIN
-                }
-            })
-            if (!adminInGroup) {
-                throw new Error("Access denied !");
-            }
-            const invitedList = await this.GroupInviteRepository.find({
-                where: { invited_by: { member_id: admin_id } },
-                relations: ["invited_by", "invited_by.group", "invited_by.user"],
-            });
-            return invitedList;
-        }
-        catch (err) {
-            console.log(err);
-            throw new Error("fetching Invited List failed " + err);
-        }
-    }
-    async getGroupInvites(input: GetGroupInvitesInput) {
-        try {
-            const { email } = input;
-            const userExist = await this.UserRepository.findOne({
-                where: { email: email, }
-            });
-            if (!userExist) {
-                throw new Error("User not found");
-            }
-            const invites = await this.GroupInviteRepository.find({
-                where: {
-                    email: email,
-                    invite_status: Invite_Status.INVITED
-                },
-                relations: ["invited_by", "invited_by.group", "invited_by.user"],
-            });
-            return invites;
-        }
-        catch (err) {
-            console.log(err);
-            throw new Error("fetching Group Invites failed " + err);
-        }
-    }
     async acceptGroupInvite(input: GroupInviteActionsInput) {
         try {
             const { invite_id } = input;
@@ -220,7 +297,8 @@ export class GroupInviteService {
                 where: {
                     member_id: inviteDetails?.invited_by?.member_id,
                     user_role: GroupMember_Role.ADMIN
-                }
+                },
+                relations: ["group"]
             })
             if (!adminInGroup) {
                 throw new Error("Access denied !");
@@ -231,17 +309,17 @@ export class GroupInviteService {
             if (!user) {
                 throw new Error("User not found");
             }
-            const joinedMessage = await this.getGroupMemberResolver.createGroupMember(
+            const joinedMessage = await this.GroupMemberService.createGroupMember(
                 {
                     group_id: adminInGroup?.group?.group_id,
-                    user_id: user.user_id,
                     user_role: GroupMember_Role.MEMBER
-                });
-            await this.deleteGroupInvites(
-                {
-                    invited_by: inviteDetails?.invited_by?.member_id,
-                    invites: [invite_id],
-                })
+                }, user?.user_id);
+            await this.GroupInviteRepository.delete({
+                email: user?.email,
+                invited_by: {
+                    group: adminInGroup?.group
+                }
+            })
             return joinedMessage;
         }
         catch (err) {

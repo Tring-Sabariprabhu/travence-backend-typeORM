@@ -26,8 +26,6 @@ export class SignupInput {
 
 @InputType()
 export class UpdateUserInput{
-    @Field()
-    user_id!: string
     
     @Field()
     name!: string

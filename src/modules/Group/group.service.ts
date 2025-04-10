@@ -1,39 +1,41 @@
 import dataSource from "../../database/data-source";
 import { Group } from "./entity/Group.entity";
-import { CreateGroupInput, DeleteGroupInput, GroupInput, GroupListInput, UpdateGroupInput } from "./group.input";
-import { GroupResponse } from "./group.respone";
+import { CreateGroupInput, DeleteGroupInput, GroupInput, UpdateGroupInput } from "./entity/group.input";
 import { GroupMember, GroupMember_Role } from "../GroupMembers/entity/GroupMembers.entity";
 import { User } from "../User/entity/User.entity";
 import { GroupMemberResolver } from "../GroupMembers/groupmember.resolver";
 import { Repository } from "typeorm";
+import { GroupMemberService } from "../GroupMembers/groupmember.service";
 
 export class GroupService {
     
-        private getGroupMemberResolver:GroupMemberResolver;
-        private GroupRepository:Repository<Group>;
-        private GroupMemberRepository:Repository<GroupMember>;
-        private UserRepository:Repository<User>;
+    private GroupMemberService : GroupMemberService;
+    private GroupRepository: Repository<Group>;
+    private GroupMemberRepository: Repository<GroupMember>;
+    private UserRepository: Repository<User>;
     
-   constructor(){
-        this.getGroupMemberResolver = new GroupMemberResolver();
+    constructor() {
+        this.GroupMemberService = new GroupMemberService();
         this.GroupRepository = dataSource.getRepository(Group);
         this.GroupMemberRepository = dataSource.getRepository(GroupMember);
         this.UserRepository = dataSource.getRepository(User);
-   }
+    }
     
-
-    async groupList(input: GroupListInput) {
+    async groupList(user_id: string) {
         try {
-            const { user_id } = input;
             const groups = await this.GroupRepository.find(
                 {
                     where: {
-                        group_members: { user: { user_id } } 
+                        group_members: {
+                            user: {
+                                user_id
+                            }
+                        }
                     },
                     relations: ["created_by"],
                 }
             )
-                
+
             return groups;
 
         }
@@ -46,8 +48,8 @@ export class GroupService {
         try {
             const { group_id } = input;
             const group = await this.GroupRepository.findOne({
-                where: {group_id: group_id},
-                relations: ["group_members","created_by", "group_members.user"]
+                where: { group_id: group_id },
+                relations: ["group_members", "created_by", "group_members.user"]
             });
             if (!group)
                 throw new Error("Group not found");
@@ -58,7 +60,7 @@ export class GroupService {
             throw new Error("fetching Group data failed");
         }
     }
-   
+
     async createGroup(input: CreateGroupInput) {
         try {
             const { created_by, group_name, group_description } = input;
@@ -78,12 +80,11 @@ export class GroupService {
             if (!groupCreated)
                 throw new Error("Created Group details not found");
             await this.GroupRepository.save(groupCreated);
-            await this.getGroupMemberResolver.createGroupMember(
+            await this.GroupMemberService.createGroupMember(
                 {
                     group_id: groupCreated.group_id,
-                    user_id: user.user_id,
                     user_role: GroupMember_Role.ADMIN
-                });
+                }, user?.user_id);
             return "Group Created  Successfully";
         }
         catch (err) {
@@ -91,19 +92,20 @@ export class GroupService {
             throw new Error("Creating Group failed " + err);
         }
     }
-    async updateGroup(input: UpdateGroupInput) {
-        try{
-            const {user_id, group_id, group_name, group_description} = input;
+    async updateGroup(input: UpdateGroupInput, user_id: string) {
+        try {
+            const { group_id, group_name, group_description } = input;
             const userExists = await this.UserRepository.findOne({
-                where: {user_id: user_id}
+                where: { user_id: user_id }
             });
-            if(!userExists){
+            if (!userExists) {
                 throw new Error("User not found");
             }
+            
             const group = await this.GroupRepository.findOne({
-                where: {group_id: group_id},
+                where: { group_id: group_id },
             });
-            if(!group){
+            if (!group) {
                 throw new Error("Group not found!");
             }
             const adminInGroup = await this.GroupMemberRepository.findOne({
@@ -117,13 +119,13 @@ export class GroupService {
                     user_role: GroupMember_Role.ADMIN
                 }
             });
-            if(!adminInGroup){
+            if (!adminInGroup) {
                 throw new Error("Access denied! Only admin can change details");
             }
             const previousGroupDetails = await this.GroupRepository.findOne({
-                where: {group_id: adminInGroup?.group?.group_id}
+                where: { group_id: adminInGroup?.group?.group_id }
             });
-            if(!previousGroupDetails){
+            if (!previousGroupDetails) {
                 throw new Error("Previous Group data not found");
             }
             previousGroupDetails.group_name = group_name;
@@ -132,28 +134,29 @@ export class GroupService {
 
             return "Group details Updated Successfully";
         }
-        catch(err){
+        catch (err) {
             console.log(err);
-            throw new Error("Updating Group details failed "+ err);
+            throw new Error("Updating Group details failed " + err);
         }
     }
-    async deleteGroup(input: DeleteGroupInput){
-        try{
-            const {user_id, group_id} = input;
+    async deleteGroup(input: DeleteGroupInput, user_id: string) {
+        try {
+           
+            const { group_id } = input;
             const userExists = await this.UserRepository.findOne({
-                where: {user_id: user_id}
+                where: { user_id: user_id }
             });
-            if(!userExists){
+            if (!userExists) {
                 throw new Error("User not found");
             }
             const group = await this.GroupRepository.findOne({
-                where: {group_id: group_id},
+                where: { group_id: group_id },
                 relations: ["created_by"]
             });
-            if(!group){
+            if (!group) {
                 throw new Error("Group not found!");
-            }else if(group?.created_by?.user_id !== user_id){
-                throw new Error("Access denied!");
+            } else if (group?.created_by?.user_id !== user_id) {
+                throw new Error("Access denied! This Group is not Created by you");
             }
             const adminInGroup = await this.GroupMemberRepository.findOne({
                 where: {
@@ -165,7 +168,7 @@ export class GroupService {
                     }
                 }
             });
-            if(!adminInGroup){
+            if (!adminInGroup) {
                 throw new Error("Access denied! You are not in Group");
             }
             await this.GroupRepository.softDelete({
@@ -173,9 +176,9 @@ export class GroupService {
             })
             return "Group deleted Successfully";
         }
-        catch(err){
+        catch (err) {
             console.log(err);
-            throw new Error("Deleting Group details failed "+err);
+            throw new Error("Deleting Group details failed " + err);
         }
     }
 }

@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { CreateExpensesInput } from "./expense.input";
+import { CreateExpensesInput } from "./entity/expense.input";
 import { Expense } from "./entity/expense.entity";
 import dataSource from "../../database/data-source";
 import { TripMember } from "../TripMember/entity/TripMember.entity";

@@ -43,13 +43,16 @@ export class UserService {
     async signin(input: SigninInput) {
         try {
             const { email, password } = input;
-            const user = await this.UserRepository.findOneBy({
-                email: email,
+            
+            const user = await this.UserRepository.findOne({
+                where: {
+                    email: email
+                }
             });
             if (!user) {
                 throw new Error("User not found");
             }
-            const decryptedPassword = decryptPassword(user?.password);
+            const decryptedPassword = decryptPassword(user.password);
 
             if (password !== decryptedPassword) {
                 throw new Error("Password Wrong");
@@ -109,9 +112,9 @@ export class UserService {
             throw new Error("Registeration failed " + err);
         }
     }
-    async updateUser(input: UpdateUserInput) {
+    async updateUser(input: UpdateUserInput, user_id: string) {
         try {
-            const { user_id, name, password } = input;
+            const { name, password } = input;
             const user = await this.UserRepository.findOne({
                 where: { user_id: user_id }
             });

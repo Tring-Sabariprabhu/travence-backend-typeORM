@@ -1,8 +1,8 @@
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { GroupService } from "./group.service";
 import { Group } from "./entity/Group.entity";
-import { CreateGroupInput, DeleteGroupInput, GroupInput, GroupListInput, UpdateGroupInput } from "./group.input";
-import { GroupResponse } from "./group.respone";
+import { CreateGroupInput, DeleteGroupInput, GroupInput, UpdateGroupInput } from "./entity/group.input";
+import { MyContext } from "../../server";
 
 @Resolver(Group)
 export class GroupResolver{
@@ -12,12 +12,12 @@ export class GroupResolver{
         this.GroupService = new GroupService();
     }
 
-    @Query(()=> [GroupResponse])
-    async groupList(@Arg("input") input: GroupListInput) {
-        return this.GroupService.groupList(input);
+    @Query(()=> [Group])
+    async groupList(@Ctx() ctx: MyContext) {
+        return this.GroupService.groupList(ctx?.user?.user_id);
     }
     
-    @Query(()=> GroupResponse)
+    @Query(()=> Group)
     async group(@Arg("input") input: GroupInput){
         return this.GroupService.group(input);
     }
@@ -28,12 +28,12 @@ export class GroupResolver{
     }
 
     @Mutation(()=> String)
-    async updateGroup(@Arg("input") input: UpdateGroupInput) {
-        return this.GroupService.updateGroup(input);
+    async updateGroup(@Ctx() ctx: MyContext, @Arg("input") input: UpdateGroupInput) {
+        return this.GroupService.updateGroup(input, ctx?.user?.user_id);
     }
     @Mutation(()=> String)
-    async deleteGroup(@Arg("input") input: DeleteGroupInput){
-        return this.GroupService.deleteGroup(input);
+    async deleteGroup(@Ctx() ctx: MyContext, @Arg("input") input: DeleteGroupInput){
+        return this.GroupService.deleteGroup(input, ctx?.user?.user_id);
     }
     
 }

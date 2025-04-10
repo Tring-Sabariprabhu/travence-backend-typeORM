@@ -1,6 +1,6 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { TripMemberService } from "./tripmember.service";
-import { CreateTripMembersInput, DeleteTripMemberInput, TripMemberInput } from "./tripmember.input";
+import { CreateTripMembersInput, DeleteTripMemberInput, TripMemberInput } from "./entity/tripmember.input";
 import { TripMember } from "./entity/TripMember.entity";
 
 @Resolver()

@@ -1,9 +1,9 @@
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { UserService } from "./user.service";
 import { SigninInput, SignupInput, UpdateUserInput } from "./user.input";
-import { LoginResponse } from "./user.response";
 import { User } from "./entity/User.entity";
 import { MyContext } from "../../server";
+import { LoginResponse } from "./user.response";
 
 @Resolver(User)
 export class UserResolver {
@@ -27,7 +27,7 @@ export class UserResolver {
         return this.userService.signup(input);
     }
     @Mutation(()=> String)
-    async updateUser(@Arg("input") input: UpdateUserInput) {
-        return this.userService.updateUser(input);
+    async updateUser(@Arg("input") input: UpdateUserInput, @Ctx() ctx: MyContext) {
+        return this.userService.updateUser(input, ctx.user.user_id);
     }
 }

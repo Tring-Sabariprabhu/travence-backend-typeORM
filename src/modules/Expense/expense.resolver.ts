@@ -1,6 +1,6 @@
 import { Arg, Mutation, Resolver } from "type-graphql";
 import { Expense } from "./entity/expense.entity";
-import { CreateExpensesInput } from "./expense.input";
+import { CreateExpensesInput } from "./entity/expense.input";
 import { ExpenseService } from "./expense.service";
 
 @Resolver(Expense)

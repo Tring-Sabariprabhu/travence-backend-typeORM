@@ -1,12 +1,16 @@
 import { Field, InputType } from "type-graphql";
-import { GroupMember_Role } from "./entity/GroupMembers.entity";
-import { User } from "../User/entity/User.entity";
-import { Group } from "../Group/entity/Group.entity";
+import { GroupMember_Role } from "./GroupMembers.entity";
 
 @InputType()
+export class GroupMembersForTripInput{
+    @Field({nullable: true})
+    group_id?: string
+
+    @Field({nullable: true})
+    trip_id?: string
+}
+@InputType()
 export class GroupMemberInput{
-    @Field()
-    user_id!: string
 
     @Field()
     group_id!: string
@@ -15,9 +19,6 @@ export class GroupMemberInput{
 export class CreateGroupMemberInput{
     @Field()
     group_id!: string
-
-    @Field()
-    user_id!: string
 
     @Field()
     user_role!: GroupMember_Role
